@@ -14,14 +14,14 @@
 FROM centos:7 AS builder
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
-ENV JAVA_HOME /opt/jdk-11.0.2
+ENV JAVA_HOME /opt/jdk-11.0.1
 
-RUN curl --retry 8 -s https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz | tar -C /opt -zxf -
+RUN curl --retry 8 -s https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz | tar -C /opt -zxf -
 
 # Replace OpenJDK's built-in CA certificate keystore with the one from the OS
 # vendor. The latter is superior in several ways.
 # REF: https://github.com/elastic/elasticsearch-docker/issues/171
-RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /opt/jdk-11.0.2/lib/security/cacerts
+RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /opt/jdk-11.0.1/lib/security/cacerts
 
 RUN yum install -y unzip which
 
@@ -48,9 +48,9 @@ COPY config/elasticsearch.yml config/log4j2.properties config/
 FROM centos:7
 
 ENV ELASTIC_CONTAINER true
-ENV JAVA_HOME /opt/jdk-11.0.2
+ENV JAVA_HOME /opt/jdk-11.0.1
 
-COPY --from=builder /opt/jdk-11.0.2 /opt/jdk-11.0.2
+COPY --from=builder /opt/jdk-11.0.1 /opt/jdk-11.0.1
 
 RUN yum update -y && \
     yum install -y nc unzip wget which && \
