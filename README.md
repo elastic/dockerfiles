@@ -28,7 +28,7 @@ https://www.elastic.co/products/elasticsearch.
 - [PRs](https://github.com/elastic/elasticsearch/pulls)
 
 This software is governed by the [Elastic
-License](https://github.com/elastic/elasticsearch/blob/6.4/licenses/ELASTIC-LICENSE.txt),
+License](https://github.com/elastic/elasticsearch/blob/6.6/licenses/ELASTIC-LICENSE.txt),
 and includes the full set of [free
 features](https://www.elastic.co/subscriptions).
 
