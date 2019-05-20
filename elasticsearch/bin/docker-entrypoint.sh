@@ -75,7 +75,7 @@ done < <(env)
 # will run in.
 export ES_JAVA_OPTS="-Des.cgroups.hierarchy.override=/ $ES_JAVA_OPTS"
 
-if [[ -f bin/elasticsearch-users ]]; then
+if [[ -d bin/x-pack ]]; then
   # Check for the ELASTIC_PASSWORD environment variable to set the
   # bootstrap password for Security.
   #
