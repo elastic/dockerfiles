@@ -15,16 +15,14 @@ FROM centos:7 AS builder
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 
-RUN yum install -y unzip which
-
 RUN groupadd -g 1000 elasticsearch && \
     adduser -u 1000 -g 1000 -d /usr/share/elasticsearch elasticsearch
 
 WORKDIR /usr/share/elasticsearch
 
-RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.1.1-linux-x86_64.tar.gz && cd -
+COPY elasticsearch-7.2.0-linux-x86_64.tar.gz /opt/
 
-RUN tar zxf /opt/elasticsearch-7.1.1-linux-x86_64.tar.gz --strip-components=1
+RUN tar zxf /opt/elasticsearch-7.2.0-linux-x86_64.tar.gz --strip-components=1
 RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env \
     && sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
 RUN mkdir -p config data logs
@@ -42,7 +40,7 @@ FROM centos:7
 ENV ELASTIC_CONTAINER true
 
 RUN for iter in {1..10}; do yum update -y && \
-    yum install -y nc unzip wget which && \
+    yum install -y nc && \
     yum clean all && exit_code=0 && break || exit_code=$? && echo "yum error: retry $iter in 10s" && sleep 10; done; \
     (exit $exit_code)
 
@@ -74,7 +72,7 @@ EXPOSE 9200 9300
 LABEL org.label-schema.schema-version="1.0" \
   org.label-schema.vendor="Elastic" \
   org.label-schema.name="elasticsearch" \
-  org.label-schema.version="7.1.1" \
+  org.label-schema.version="7.2.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   license="Elastic License"
