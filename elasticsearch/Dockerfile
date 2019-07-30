@@ -20,9 +20,9 @@ RUN groupadd -g 1000 elasticsearch && \
 
 WORKDIR /usr/share/elasticsearch
 
-RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.2.0-linux-x86_64.tar.gz && cd -
+RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.2.1-linux-x86_64.tar.gz && cd -
 
-RUN tar zxf /opt/elasticsearch-7.2.0-linux-x86_64.tar.gz --strip-components=1
+RUN tar zxf /opt/elasticsearch-7.2.1-linux-x86_64.tar.gz --strip-components=1
 RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env \
     && sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
 RUN mkdir -p config data logs
@@ -72,7 +72,7 @@ EXPOSE 9200 9300
 LABEL org.label-schema.schema-version="1.0" \
   org.label-schema.vendor="Elastic" \
   org.label-schema.name="elasticsearch" \
-  org.label-schema.version="7.2.0" \
+  org.label-schema.version="7.2.1" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   license="Elastic License"
