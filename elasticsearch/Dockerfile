@@ -14,14 +14,14 @@
 FROM centos:7 AS builder
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
-ENV JAVA_HOME /opt/jdk-12.0.1
+ENV JAVA_HOME /opt/jdk-12.0.2
 
-RUN curl --retry 8 -s https://download.oracle.com/java/GA/jdk12.0.1/69cfe15208a647278a19ef0990eea691/12/GPL/openjdk-12.0.1_linux-x64_bin.tar.gz | tar -C /opt -zxf -
+RUN curl --retry 8 -s https://download.java.net/java/GA/jdk12.0.2/e482c34c86bd4bf8b56c0b35558996b9/10/GPL/openjdk-12.0.2_linux-x64_bin.tar.gz | tar -C /opt -zxf -
 
 # Replace OpenJDK's built-in CA certificate keystore with the one from the OS
 # vendor. The latter is superior in several ways.
 # REF: https://github.com/elastic/elasticsearch-docker/issues/171
-RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /opt/jdk-12.0.1/lib/security/cacerts
+RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /opt/jdk-12.0.2/lib/security/cacerts
 
 RUN yum install -y unzip which
 
@@ -30,9 +30,9 @@ RUN groupadd -g 1000 elasticsearch && \
 
 WORKDIR /usr/share/elasticsearch
 
-RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.2.tar.gz && cd -
+RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.3.tar.gz && cd -
 
-RUN tar zxf /opt/elasticsearch-6.8.2.tar.gz --strip-components=1
+RUN tar zxf /opt/elasticsearch-6.8.3.tar.gz --strip-components=1
 RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env \
     && sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
 RUN mkdir -p config data logs
@@ -48,9 +48,9 @@ COPY config/elasticsearch.yml config/log4j2.properties config/
 FROM centos:7
 
 ENV ELASTIC_CONTAINER true
-ENV JAVA_HOME /opt/jdk-12.0.1
+ENV JAVA_HOME /opt/jdk-12.0.2
 
-COPY --from=builder /opt/jdk-12.0.1 /opt/jdk-12.0.1
+COPY --from=builder /opt/jdk-12.0.2 /opt/jdk-12.0.2
 
 RUN for iter in {1..10}; do yum update -y && \
     yum install -y nc unzip wget which && \
@@ -76,13 +76,25 @@ RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh && \
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.schema-version="1.0" \
-  org.label-schema.vendor="Elastic" \
-  org.label-schema.name="elasticsearch" \
-  org.label-schema.version="6.8.2" \
+LABEL org.label-schema.build-date="2019-08-29T19:05:24.312154Z" \
+  org.label-schema.license="Elastic-License" \
+  org.label-schema.name="Elasticsearch" \
+  org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
+  org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
+  org.label-schema.vcs-ref="0c48c0e73be564f3a8a286b2165d50de2fbbb661" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
-  license="Elastic License"
+  org.label-schema.vendor="Elastic" \
+  org.label-schema.version="6.8.3" \
+  org.opencontainers.image.created="2019-08-29T19:05:24.312154Z" \
+  org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
+  org.opencontainers.image.licenses="Elastic-License" \
+  org.opencontainers.image.revision="0c48c0e73be564f3a8a286b2165d50de2fbbb661" \
+  org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
+  org.opencontainers.image.title="Elasticsearch" \
+  org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
+  org.opencontainers.image.vendor="Elastic" \
+  org.opencontainers.image.version="6.8.3"
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # Dummy overridable parameter parsed by entrypoint
