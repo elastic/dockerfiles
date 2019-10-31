@@ -48,6 +48,25 @@ https://www.elastic.co/products/kibana.
 - [Kibana Discuss Forums](https://discuss.elastic.co/c/kibana) 
 - [Kibana Documentation](https://www.elastic.co/guide/en/kibana/current/index.html)
 
+## Logstash
+
+**Logstash** is an open source, server-side data processing pipeline that
+ingests data from a multitude of sources simultaneously, transforms it, and
+then sends it to your favorite "stash." 
+
+For more information about Logstash, please visit
+https://www.elastic.co/products/logstash.
+
+### Where to file issues and PRs
+
+- [Issues](https://github.com/elastic/logstash/issues)
+- [PRs](https://github.com/elastic/logstash/pulls)
+
+### Where to get help
+
+- [Logstash Discuss Forums](https://discuss.elastic.co/c/logstash) 
+- [Logstash Documentation](https://www.elastic.co/guide/en/logstash/current/index.html)
+
 ## Still need help?
 
 You can learn more about the Elastic Community and also understand how to get more help 
