@@ -50,9 +50,9 @@ https://www.elastic.co/products/kibana.
 
 ## Logstash
 
-**Logstash** is an open source, server-side data processing pipeline that
-ingests data from a multitude of sources simultaneously, transforms it, and
-then sends it to your favorite "stash." 
+**Logstash** is a server-side data processing pipeline that ingests data from a
+multitude of sources simultaneously, transforms it, and then sends it to your
+favorite "stash." 
 
 For more information about Logstash, please visit
 https://www.elastic.co/products/logstash.
