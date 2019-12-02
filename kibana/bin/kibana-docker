@@ -91,6 +91,17 @@ kibana_vars=(
     apm_oss.transactionIndices
     apm_oss.metricsIndices
     xpack.canvas.enabled
+    xpack.code.ui.enabled
+    xpack.code.disk.thresholdEnabled
+    xpack.code.disk.watermarkLow
+    xpack.code.maxWorkspace
+    xpack.code.indexRepoFrequencyMs
+    xpack.code.updateRepoFrequencyMs
+    xpack.code.lsp.verbose
+    xpack.code.verbose
+    xpack.code.security.enableGitCertCheck
+    xpack.code.security.gitHostWhitelist
+    xpack.code.security.gitProtocolWhitelist
     xpack.graph.enabled
     xpack.grokdebugger.enabled
     xpack.infra.enabled
@@ -164,6 +175,7 @@ kibana_vars=(
     xpack.security.authc.providers
     xpack.security.authc.oidc.realm
     xpack.security.authc.saml.realm
+    xpack.security.authc.saml.maxRedirectURLSize
     xpack.security.cookieName
     xpack.security.enabled
     xpack.security.encryptionKey
@@ -172,7 +184,8 @@ kibana_vars=(
     xpack.security.public.protocol
     xpack.security.public.hostname
     xpack.security.public.port
-    xpack.telemetry.enabled
+    telemetry.enabled
+    telemetry.sendUsageFrom
 )
 
 longopts=''
