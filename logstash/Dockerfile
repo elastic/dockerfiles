@@ -13,9 +13,9 @@ RUN groupadd --gid 1000 logstash && \
       logstash
 
 # Add Logstash itself.
-RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-6.8.5.tar.gz | \
+RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-6.8.6.tar.gz | \
     tar zxf - -C /usr/share && \
-    mv /usr/share/logstash-6.8.5 /usr/share/logstash && \
+    mv /usr/share/logstash-6.8.6 /usr/share/logstash && \
     chown --recursive logstash:logstash /usr/share/logstash/ && \
     chown -R logstash:root /usr/share/logstash && \
     chmod -R g=u /usr/share/logstash && \
@@ -52,7 +52,7 @@ EXPOSE 9600 5044
 LABEL org.label-schema.schema-version="1.0" \
   org.label-schema.vendor="Elastic" \
   org.label-schema.name="logstash" \
-  org.label-schema.version="6.8.5" \
+  org.label-schema.version="6.8.6" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
 license="Elastic License"
