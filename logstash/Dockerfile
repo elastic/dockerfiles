@@ -32,6 +32,7 @@ ENV PATH=/usr/share/logstash/bin:$PATH
 ADD config/pipelines.yml config/pipelines.yml
 ADD config/logstash-full.yml config/logstash.yml
 ADD config/log4j2.properties config/
+ADD config/jvm.options config/
 ADD pipeline/default.conf pipeline/logstash.conf
 RUN chown --recursive logstash:root config/ pipeline/
 
