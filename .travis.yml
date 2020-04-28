@@ -1,0 +1,11 @@
+os: linux
+dist: bionic
+
+services: docker
+
+before_install:
+  - cd elasticsearch
+
+script:
+- docker build -t wajika/elasticsearch:$(date +%Y.%m.%d) .
+#- docker push wajika/ffmpeg:$(date +%Y.%m.%d)
