@@ -8,5 +8,5 @@ before_install:
 
 script:
 - echo "$CCR_PASSWORD" | docker login -u "$CCR_USERNAME" ccr.ccs.tencentyun.com --password-stdin
-- docker build -t wajika/elasticsearch:$(date +%Y.%m.%d) .
-- docker push wajika/elasticsearch:$(date +%Y.%m.%d)
+- docker build -t ccr.ccs.tencentyun.com/wajika/elasticsearch:$(date +%Y.%m.%d) .
+- docker push ccr.ccs.tencentyun.com/wajika/elasticsearch:$(date +%Y.%m.%d)
