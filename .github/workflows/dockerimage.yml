@@ -1,16 +1,13 @@
 name: Docker Image CI
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+on: [push]
+  
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file elasticsearch/Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file elasticsearch/Dockerfile --tag elasticsearch:$(date +%s)
+      working-directory: ./elasticsearch
     
