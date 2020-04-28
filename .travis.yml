@@ -7,6 +7,6 @@ before_install:
   - cd elasticsearch
 
 script:
-- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+- echo "$CCR_PASSWORD" | docker login -u "$CCR_USERNAME" ccr.ccs.tencentyun.com --password-stdin
 - docker build -t wajika/elasticsearch:$(date +%Y.%m.%d) .
 - docker push wajika/elasticsearch:$(date +%Y.%m.%d)
