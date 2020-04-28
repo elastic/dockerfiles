@@ -6,8 +6,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: login docker
+      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
     - uses: actions/checkout@v2
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag elasticsearch:$(date +%s)
       working-directory: ./elasticsearch
-    
+    - name: push image
+      run: docker push wajika/elasticsearch:$(date +%Y.%m.%d)
+      
