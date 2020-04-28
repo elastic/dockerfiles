@@ -13,5 +13,5 @@ jobs:
       run: docker build . --file Dockerfile --tag elasticsearch:$(date +%s)
       working-directory: ./elasticsearch
     - name: push image
-      run: docker push wajika/elasticsearch:$(date +%Y.%m.%d)
+      run: docker push wajika/elasticsearch:with-x-pack
       
