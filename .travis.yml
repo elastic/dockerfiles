@@ -7,5 +7,6 @@ before_install:
   - cd elasticsearch
 
 script:
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - docker build -t wajika/elasticsearch:$(date +%Y.%m.%d) .
-#- docker push wajika/ffmpeg:$(date +%Y.%m.%d)
+- docker push wajika/elasticsearch:$(date +%Y.%m.%d)
