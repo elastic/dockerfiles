@@ -8,6 +8,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file elasticsearch/Dockerfile --tag elasticsearch:$(date +%s)
+      run: docker build . --file Dockerfile --tag elasticsearch:$(date +%s)
       working-directory: ./elasticsearch
     
