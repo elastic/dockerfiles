@@ -9,10 +9,10 @@
 FROM centos:7 AS prep_files
 # Add tar and gzip
 RUN yum update -y && yum install -y tar gzip && yum clean all
-RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-7.6.2-linux-x86_64.tar.gz && cd -
+RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-7.7.0-linux-x86_64.tar.gz && cd -
 RUN mkdir /usr/share/kibana
 WORKDIR /usr/share/kibana
-RUN tar --strip-components=1 -zxf /opt/kibana-7.6.2-linux-x86_64.tar.gz
+RUN tar --strip-components=1 -zxf /opt/kibana-7.7.0-linux-x86_64.tar.gz
 # Ensure that group permissions are the same as user permissions.
 # This will help when relying on GID-0 to run Kibana, rather than UID-1000.
 # OpenShift does this, for example.
@@ -54,11 +54,14 @@ COPY --chown=1000:0 bin/kibana-docker /usr/local/bin/
 # Ensure gid 0 write permissions for OpenShift.
 RUN chmod g+ws /usr/share/kibana && find /usr/share/kibana -gid 0 -and -not -perm /g+w -exec chmod g+w {} \;
 
+# Remove the suid bit everywhere to mitigate "Stack Clash"
+RUN find / -xdev -perm -4000 -exec chmod u-s {} +
+
 # Provide a non-root user to run the process.
 RUN groupadd --gid 1000 kibana && useradd --uid 1000 --gid 1000 --home-dir /usr/share/kibana --no-create-home kibana
 USER kibana
 
-LABEL org.label-schema.schema-version="1.0" org.label-schema.vendor="Elastic" org.label-schema.name="kibana" org.label-schema.version="7.6.2" org.label-schema.url="https://www.elastic.co/products/kibana" org.label-schema.vcs-url="https://github.com/elastic/kibana" org.label-schema.license="Elastic License" org.label-schema.usage="https://www.elastic.co/guide/en/kibana/index.html" org.label-schema.build-date="2020-03-26T07:47:43.654Z" license="Elastic License"
+LABEL org.label-schema.schema-version="1.0" org.label-schema.vendor="Elastic" org.label-schema.name="kibana" org.label-schema.version="7.7.0" org.label-schema.url="https://www.elastic.co/products/kibana" org.label-schema.vcs-url="https://github.com/elastic/kibana" org.label-schema.license="Elastic License" org.label-schema.usage="https://www.elastic.co/guide/en/kibana/index.html" org.label-schema.build-date="2020-05-12T03:25:49.654Z" license="Elastic License"
 
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 
