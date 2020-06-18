@@ -7,32 +7,47 @@
 ################################################################################
 # Build stage 0 `builder`:
 # Extract elasticsearch artifact
-# Install required plugins
 # Set gid=0 and make group perms==owner perms
 ################################################################################
 
-FROM amd64/centos:7 AS builder
-
-RUN for iter in {1..10}; do yum update --setopt=tsflags=nodocs -y &&     yum install --setopt=tsflags=nodocs -y wget gzip shadow-utils tar &&     yum clean all && exit_code=0 && break || exit_code=$? && echo "yum error: retry $iter in 10s" && sleep 10; done;     (exit $exit_code)
+FROM centos:7 AS builder
 
 # `tini` is a tiny but valid init for containers. This is used to cleanly
 # control how ES and any child processes are shut down.
 #
 # The tini GitHub page gives instructions for verifying the binary using
 # gpg, but the keyservers are slow to return the key and this can fail the
-# build. Instead, we check the binary against a checksum that they provide.
-RUN wget --no-cookies --quiet https://github.com/krallin/tini/releases/download/v0.19.0/tini-amd64     && wget --no-cookies --quiet https://github.com/krallin/tini/releases/download/v0.19.0/tini-amd64.sha256sum     && sha256sum -c tini-amd64.sha256sum     && mv tini-amd64 /tini     && chmod +x /tini
+# build. Instead, we check the binary against the published checksum.
+RUN set -eux ; \
+    \
+    tini_bin="" ; \
+    case "$(arch)" in \
+        aarch64) tini_bin='tini-arm64' ;; \
+        x86_64)  tini_bin='tini-amd64' ;; \
+        *) echo >&2 ; echo >&2 "Unsupported architecture $(arch)" ; echo >&2 ; exit 1 ;; \
+    esac ; \
+    curl --retry 8 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin} ; \
+    curl --retry 8 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin}.sha256sum ; \
+    sha256sum -c ${tini_bin}.sha256sum ; \
+    rm ${tini_bin}.sha256sum ; \
+    mv ${tini_bin} /tini ; \
+    chmod +x /tini
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 
-RUN groupadd -g 1000 elasticsearch &&     adduser -u 1000 -g 1000 -d /usr/share/elasticsearch elasticsearch
+RUN groupadd -g 1000 elasticsearch && \
+    adduser -u 1000 -g 1000 -d /usr/share/elasticsearch elasticsearch
 
 WORKDIR /usr/share/elasticsearch
 
-RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.7.1-linux-x86_64.tar.gz && cd -
 
-RUN tar zxf /opt/elasticsearch-7.7.1-linux-x86_64.tar.gz --strip-components=1
-RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env     && sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
+RUN curl --retry 8 -S -L \
+      --output /opt/elasticsearch.tar.gz \
+      https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.8.0-linux-$(arch).tar.gz
+
+
+RUN tar zxf /opt/elasticsearch.tar.gz --strip-components=1
+RUN sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
 RUN mkdir -p config config/jvm.options.d data logs
 RUN chmod 0775 config config/jvm.options.d data logs
 COPY config/elasticsearch.yml config/log4j2.properties config/
@@ -44,15 +59,21 @@ RUN chmod 0660 config/elasticsearch.yml config/log4j2.properties
 # Add entrypoint
 ################################################################################
 
-FROM amd64/centos:7
+FROM centos:7
 
 ENV ELASTIC_CONTAINER true
 
 COPY --from=builder /tini /tini
 
-RUN for iter in {1..10}; do yum update --setopt=tsflags=nodocs -y &&     yum install --setopt=tsflags=nodocs -y nc shadow-utils zip unzip &&     yum clean all && exit_code=0 && break || exit_code=$? && echo "yum error: retry $iter in 10s" && sleep 10; done;     (exit $exit_code)
+RUN for iter in {1..10}; do yum update --setopt=tsflags=nodocs -y && \
+    yum install --setopt=tsflags=nodocs -y nc shadow-utils zip unzip && \
+    yum clean all && exit_code=0 && break || exit_code=$? && echo "yum error: retry $iter in 10s" && sleep 10; done; \
+    (exit $exit_code)
 
-RUN groupadd -g 1000 elasticsearch &&     adduser -u 1000 -g 1000 -G 0 -d /usr/share/elasticsearch elasticsearch &&     chmod 0775 /usr/share/elasticsearch &&     chgrp 0 /usr/share/elasticsearch
+RUN groupadd -g 1000 elasticsearch && \
+    adduser -u 1000 -g 1000 -G 0 -d /usr/share/elasticsearch elasticsearch && \
+    chmod 0775 /usr/share/elasticsearch && \
+    chgrp 0 /usr/share/elasticsearch
 
 WORKDIR /usr/share/elasticsearch
 COPY --from=builder --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticsearch
@@ -66,14 +87,33 @@ ENV PATH /usr/share/elasticsearch/bin:$PATH
 
 COPY bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
-RUN chmod g=u /etc/passwd &&     chmod 0775 /usr/local/bin/docker-entrypoint.sh
+RUN chmod g=u /etc/passwd && \
+    chmod 0775 /usr/local/bin/docker-entrypoint.sh
 
 # Ensure that there are no files with setuid or setgid, in order to mitigate "stackclash" attacks.
 RUN find / -xdev -perm -4000 -exec chmod ug-s {} +
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2020-05-28T16:30:01.040088Z"   org.label-schema.license="Elastic-License"   org.label-schema.name="Elasticsearch"   org.label-schema.schema-version="1.0"   org.label-schema.url="https://www.elastic.co/products/elasticsearch"   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html"   org.label-schema.vcs-ref="ad56dce891c901a492bb1ee393f12dfff473a423"   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch"   org.label-schema.vendor="Elastic"   org.label-schema.version="7.7.1"   org.opencontainers.image.created="2020-05-28T16:30:01.040088Z"   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html"   org.opencontainers.image.licenses="Elastic-License"   org.opencontainers.image.revision="ad56dce891c901a492bb1ee393f12dfff473a423"   org.opencontainers.image.source="https://github.com/elastic/elasticsearch"   org.opencontainers.image.title="Elasticsearch"   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch"   org.opencontainers.image.vendor="Elastic"   org.opencontainers.image.version="7.7.1"
+LABEL org.label-schema.build-date="2020-06-14T19:35:50.234439Z" \
+  org.label-schema.license="Elastic-License" \
+  org.label-schema.name="Elasticsearch" \
+  org.label-schema.schema-version="1.0" \
+  org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
+  org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
+  org.label-schema.vcs-ref="757314695644ea9a1dc2fecd26d1a43856725e65" \
+  org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
+  org.label-schema.vendor="Elastic" \
+  org.label-schema.version="7.8.0" \
+  org.opencontainers.image.created="2020-06-14T19:35:50.234439Z" \
+  org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
+  org.opencontainers.image.licenses="Elastic-License" \
+  org.opencontainers.image.revision="757314695644ea9a1dc2fecd26d1a43856725e65" \
+  org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
+  org.opencontainers.image.title="Elasticsearch" \
+  org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
+  org.opencontainers.image.vendor="Elastic" \
+  org.opencontainers.image.version="7.8.0"
 
 ENTRYPOINT ["/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
 # Dummy overridable parameter parsed by entrypoint
