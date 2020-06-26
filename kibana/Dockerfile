@@ -6,7 +6,7 @@
 # Build stage 0
 # Extract Kibana and make various file manipulations.
 ################################################################################
-FROM centos:7 AS prep_files
+FROM centos:8 AS prep_files
 # Add tar and gzip
 RUN yum update -y && yum install -y tar gzip && yum clean all
 RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-7.8.0-linux-x86_64.tar.gz && cd -
@@ -24,7 +24,7 @@ RUN find /usr/share/kibana -type d -exec chmod g+s {} \;
 # Build stage 1
 # Copy prepared files from the previous stage and complete the image.
 ################################################################################
-FROM centos:7
+FROM centos:8
 EXPOSE 5601
 
 # Add Reporting dependencies.
