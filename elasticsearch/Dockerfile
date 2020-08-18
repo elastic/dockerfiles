@@ -43,7 +43,7 @@ WORKDIR /usr/share/elasticsearch
 
 RUN curl --retry 8 -S -L \
       --output /opt/elasticsearch.tar.gz \
-      https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.8.1-linux-$(arch).tar.gz
+      https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.9.0-linux-$(arch).tar.gz
 
 
 RUN tar zxf /opt/elasticsearch.tar.gz --strip-components=1
@@ -95,25 +95,25 @@ RUN find / -xdev -perm -4000 -exec chmod ug-s {} +
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2020-07-21T16:40:44.668009Z" \
+LABEL org.label-schema.build-date="2020-08-11T21:36:48.204330Z" \
   org.label-schema.license="Elastic-License" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="b5ca9c58fb664ca8bf9e4057fc229b3396bf3a89" \
+  org.label-schema.vcs-ref="a479a2a7fce0389512d6a9361301708b92dff667" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.8.1" \
-  org.opencontainers.image.created="2020-07-21T16:40:44.668009Z" \
+  org.label-schema.version="7.9.0" \
+  org.opencontainers.image.created="2020-08-11T21:36:48.204330Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License" \
-  org.opencontainers.image.revision="b5ca9c58fb664ca8bf9e4057fc229b3396bf3a89" \
+  org.opencontainers.image.revision="a479a2a7fce0389512d6a9361301708b92dff667" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.8.1"
+  org.opencontainers.image.version="7.9.0"
 
 ENTRYPOINT ["/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
 # Dummy overridable parameter parsed by entrypoint
