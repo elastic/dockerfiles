@@ -6,11 +6,10 @@
 
 ################################################################################
 # Build stage 0 `builder`:
-# Extract elasticsearch artifact
-# Set gid=0 and make group perms==owner perms
+# Extract Elasticsearch artifact
 ################################################################################
 
-FROM centos:7 AS builder
+FROM centos:8 AS builder
 
 # `tini` is a tiny but valid init for containers. This is used to cleanly
 # control how ES and any child processes are shut down.
@@ -19,7 +18,6 @@ FROM centos:7 AS builder
 # gpg, but the keyservers are slow to return the key and this can fail the
 # build. Instead, we check the binary against the published checksum.
 RUN set -eux ; \
-    \
     tini_bin="" ; \
     case "$(arch)" in \
         aarch64) tini_bin='tini-arm64' ;; \
@@ -33,17 +31,13 @@ RUN set -eux ; \
     mv ${tini_bin} /tini ; \
     chmod +x /tini
 
-ENV PATH /usr/share/elasticsearch/bin:$PATH
-
-RUN groupadd -g 1000 elasticsearch && \
-    adduser -u 1000 -g 1000 -d /usr/share/elasticsearch elasticsearch
-
+RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
 
 RUN curl --retry 8 -S -L \
       --output /opt/elasticsearch.tar.gz \
-      https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.9.3-linux-$(arch).tar.gz
+      https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.10.0-linux-$(arch).tar.gz
 
 
 RUN tar zxf /opt/elasticsearch.tar.gz --strip-components=1
@@ -54,29 +48,33 @@ COPY config/elasticsearch.yml config/log4j2.properties config/
 RUN chmod 0660 config/elasticsearch.yml config/log4j2.properties
 
 ################################################################################
-# Build stage 1 (the actual elasticsearch image):
+# Build stage 1 (the actual Elasticsearch image):
+#
 # Copy elasticsearch from stage 0
 # Add entrypoint
 ################################################################################
 
-FROM centos:7
+FROM centos:8
 
 ENV ELASTIC_CONTAINER true
 
-COPY --from=builder /tini /tini
-
-RUN for iter in {1..10}; do yum update --setopt=tsflags=nodocs -y && \
-    yum install --setopt=tsflags=nodocs -y nc shadow-utils zip unzip && \
-    yum clean all && exit_code=0 && break || exit_code=$? && echo "yum error: retry $iter in 10s" && sleep 10; done; \
+RUN for iter in {1..10}; do \
+      yum update --setopt=tsflags=nodocs -y && \
+      yum install --setopt=tsflags=nodocs -y \
+        nc shadow-utils zip unzip  && \
+      yum clean all && exit_code=0 && break || exit_code=$? && echo "yum error: retry $iter in 10s" && \
+      sleep 10; \
+    done; \
     (exit $exit_code)
 
 RUN groupadd -g 1000 elasticsearch && \
     adduser -u 1000 -g 1000 -G 0 -d /usr/share/elasticsearch elasticsearch && \
     chmod 0775 /usr/share/elasticsearch && \
-    chgrp 0 /usr/share/elasticsearch
+    chown -R 1000:0 /usr/share/elasticsearch
 
 WORKDIR /usr/share/elasticsearch
 COPY --from=builder --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticsearch
+COPY --from=builder --chown=0:0 /tini /tini
 
 # Replace OpenJDK's built-in CA certificate keystore with the one from the OS
 # vendor. The latter is superior in several ways.
@@ -87,7 +85,10 @@ ENV PATH /usr/share/elasticsearch/bin:$PATH
 
 COPY bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
-RUN chmod g=u /etc/passwd && \
+# The JDK's directories' permissions don't allow `java` to be executed under a different
+# group to the default. Fix this.
+RUN find /usr/share/elasticsearch/jdk -type d -exec chmod 0755 '{}' \; && \
+    chmod g=u /etc/passwd && \
     chmod 0775 /usr/local/bin/docker-entrypoint.sh
 
 # Ensure that there are no files with setuid or setgid, in order to mitigate "stackclash" attacks.
@@ -95,25 +96,26 @@ RUN find / -xdev -perm -4000 -exec chmod ug-s {} +
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2020-10-16T10:36:16.141335Z" \
+LABEL org.label-schema.build-date="2020-11-09T21:30:33.964949Z" \
   org.label-schema.license="Elastic-License" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="c4138e51121ef06a6404866cddc601906fe5c868" \
+  org.label-schema.vcs-ref="51e9d6f22758d0374a0f3f5c6e8f3a7997850f96" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.9.3" \
-  org.opencontainers.image.created="2020-10-16T10:36:16.141335Z" \
+  org.label-schema.version="7.10.0" \
+  org.opencontainers.image.created="2020-11-09T21:30:33.964949Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License" \
-  org.opencontainers.image.revision="c4138e51121ef06a6404866cddc601906fe5c868" \
+  org.opencontainers.image.revision="51e9d6f22758d0374a0f3f5c6e8f3a7997850f96" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.9.3"
+  org.opencontainers.image.version="7.10.0"
+
 
 ENTRYPOINT ["/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
 # Dummy overridable parameter parsed by entrypoint
