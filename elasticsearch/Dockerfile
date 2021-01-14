@@ -37,7 +37,7 @@ WORKDIR /usr/share/elasticsearch
 
 RUN curl --retry 8 -S -L \
       --output /opt/elasticsearch.tar.gz \
-      https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-7.10.1-linux-$(arch).tar.gz
+      https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-7.10.2-linux-$(arch).tar.gz
 
 
 RUN tar zxf /opt/elasticsearch.tar.gz --strip-components=1
@@ -96,25 +96,25 @@ RUN find / -xdev -perm -4000 -exec chmod ug-s {} +
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2020-12-05T01:00:33.671820Z" \
+LABEL org.label-schema.build-date="2021-01-13T00:42:12.435326Z" \
   org.label-schema.license="Elastic-License" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="1c34507e66d7db1211f66f3513706fdf548736aa" \
+  org.label-schema.vcs-ref="747e1cc71def077253878a59143c1f785afa92b9" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.10.1" \
-  org.opencontainers.image.created="2020-12-05T01:00:33.671820Z" \
+  org.label-schema.version="7.10.2" \
+  org.opencontainers.image.created="2021-01-13T00:42:12.435326Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License" \
-  org.opencontainers.image.revision="1c34507e66d7db1211f66f3513706fdf548736aa" \
+  org.opencontainers.image.revision="747e1cc71def077253878a59143c1f785afa92b9" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.10.1"
+  org.opencontainers.image.version="7.10.2"
 
 
 ENTRYPOINT ["/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]

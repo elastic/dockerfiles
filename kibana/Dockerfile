@@ -13,13 +13,13 @@ FROM centos:8 AS builder
 
 
 RUN cd /opt && \
-  curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-7.10.1-linux-x86_64.tar.gz && \
+  curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-7.10.2-linux-x86_64.tar.gz && \
   cd -
 
 
 RUN mkdir /usr/share/kibana
 WORKDIR /usr/share/kibana
-RUN tar --strip-components=1 -zxf /opt/kibana-7.10.1-linux-x86_64.tar.gz
+RUN tar --strip-components=1 -zxf /opt/kibana-7.10.2-linux-x86_64.tar.gz
 # Ensure that group permissions are the same as user permissions.
 # This will help when relying on GID-0 to run Kibana, rather than UID-1000.
 # OpenShift does this, for example.
@@ -84,25 +84,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2020-12-05T02:04:38.350Z" \
+LABEL org.label-schema.build-date="2021-01-13T02:23:45.910Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="608c5e5dd32659e8afadd520d0cdc58766ba505b" \
+  org.label-schema.vcs-ref="a0b793698735eb1d0ab1038f8e5d7a951524e929" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.10.1" \
-  org.opencontainers.image.created="2020-12-05T02:04:38.350Z" \
+  org.label-schema.version="7.10.2" \
+  org.opencontainers.image.created="2021-01-13T02:23:45.910Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="608c5e5dd32659e8afadd520d0cdc58766ba505b" \
+  org.opencontainers.image.revision="a0b793698735eb1d0ab1038f8e5d7a951524e929" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.10.1"
+  org.opencontainers.image.version="7.10.2"
 
 
 USER kibana
