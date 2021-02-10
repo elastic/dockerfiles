@@ -14,16 +14,16 @@
 FROM centos:7 AS builder
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
-ENV JAVA_HOME /opt/jdk-15+36
+ENV JAVA_HOME /opt/jdk-15.0.1+9
 
-RUN for iter in {1..10}; do curl -L -s -S https://github.com/AdoptOpenJDK/openjdk15-binaries/releases/download/jdk-15%2B36/OpenJDK15U-jdk_x64_linux_hotspot_15_36.tar.gz | tar -C /opt -zx && \
+RUN for iter in {1..10}; do curl -L -s -S https://github.com/AdoptOpenJDK/openjdk15-binaries/releases/download/jdk-15.0.1%2B9/OpenJDK15U-jdk_x64_linux_hotspot_15.0.1_9.tar.gz | tar -C /opt -zx && \
     exit_code=0 && break || exit_code=\$? && echo "download error: retry $iter in 10s" && sleep 10; done; \
     (exit $exit_code)
  
 # Replace OpenJDK's built-in CA certificate keystore with the one from the OS
 # vendor. The latter is superior in several ways.
 # REF: https://github.com/elastic/elasticsearch-docker/issues/171
-RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /opt/jdk-15+36/lib/security/cacerts
+RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /opt/jdk-15.0.1+9/lib/security/cacerts
 
 RUN yum install -y unzip which
 
@@ -32,9 +32,9 @@ RUN groupadd -g 1000 elasticsearch && \
 
 WORKDIR /usr/share/elasticsearch
 
-RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.13.tar.gz && cd -
+RUN cd /opt && curl --retry 8 -s -L -O https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-6.8.14.tar.gz && cd -
 
-RUN tar zxf /opt/elasticsearch-6.8.13.tar.gz --strip-components=1
+RUN tar zxf /opt/elasticsearch-6.8.14.tar.gz --strip-components=1
 RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env \
     && sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
 RUN mkdir -p config data logs
@@ -50,9 +50,9 @@ COPY config/elasticsearch.yml config/log4j2.properties config/
 FROM centos:7
 
 ENV ELASTIC_CONTAINER true
-ENV JAVA_HOME /opt/jdk-15+36
+ENV JAVA_HOME /opt/jdk-15.0.1+9
 
-COPY --from=builder /opt/jdk-15+36 /opt/jdk-15+36
+COPY --from=builder /opt/jdk-15.0.1+9 /opt/jdk-15.0.1+9
 
 RUN for iter in {1..10}; do yum update  --setopt=tsflags=nodocs -y && \
     yum install -y  --setopt=tsflags=nodocs nc unzip wget which && \
@@ -78,25 +78,25 @@ RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh && \
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2020-10-16T09:09:46.555371Z" \
+LABEL org.label-schema.build-date="2021-02-02T19:58:04.182039Z" \
   org.label-schema.license="Elastic-License" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="be13c699d0ab4706ec25626375b0965e3cdfa138" \
+  org.label-schema.vcs-ref="dab5822e9f9888f3e71aaca22e1faecce73706f6" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="6.8.13" \
-  org.opencontainers.image.created="2020-10-16T09:09:46.555371Z" \
+  org.label-schema.version="6.8.14" \
+  org.opencontainers.image.created="2021-02-02T19:58:04.182039Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License" \
-  org.opencontainers.image.revision="be13c699d0ab4706ec25626375b0965e3cdfa138" \
+  org.opencontainers.image.revision="dab5822e9f9888f3e71aaca22e1faecce73706f6" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="6.8.13"
+  org.opencontainers.image.version="6.8.14"
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # Dummy overridable parameter parsed by entrypoint
