@@ -73,7 +73,7 @@ You can learn more about the Elastic Community and also understand how to get mo
 visiting [Elastic Community](https://www.elastic.co/community).
 
 
-This software is governed by their applicable licenses,
+This software is governed by the their applicable licenses,
 and includes the full set of [free
 features](https://www.elastic.co/subscriptions).
 
