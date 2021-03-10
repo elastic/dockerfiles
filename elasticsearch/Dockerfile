@@ -36,13 +36,13 @@ WORKDIR /usr/share/elasticsearch
 
 RUN curl --retry 10 -S -L \
       --output /opt/elasticsearch.tar.gz \
-      https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-7.11.1-linux-$(arch).tar.gz
+      https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-7.11.2-linux-$(arch).tar.gz
 
 RUN tar -zxf /opt/elasticsearch.tar.gz --strip-components=1
 
 # The distribution includes a `config` directory, no need to create it
 COPY config/elasticsearch.yml config/
-COPY bin/transform-log4j-config-7.11.1.jar /tmp/
+COPY bin/transform-log4j-config-7.11.2.jar /tmp/
 
 # 1. Configure the distribution for Docker
 # 2. Ensure directories are created. Most already are, but make sure
@@ -59,7 +59,7 @@ RUN sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elas
     mkdir -p config/jvm.options.d data logs plugins && \
     chmod 0775 config config/jvm.options.d data logs plugins && \
     mv config/log4j2.properties config/log4j2.file.properties && \
-    jdk/bin/java -jar /tmp/transform-log4j-config-7.11.1.jar config/log4j2.file.properties > config/log4j2.properties && \
+    jdk/bin/java -jar /tmp/transform-log4j-config-7.11.2.jar config/log4j2.file.properties > config/log4j2.properties && \
     chmod 0660 config/elasticsearch.yml config/log4j2*.properties && \
     find ./jdk -type d -exec chmod 0755 {} + && \
     find . -xdev -perm -4000 -exec chmod ug-s {} + && \
@@ -113,25 +113,25 @@ RUN chmod g=u /etc/passwd && \
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2021-02-15T13:44:09.394032Z" \
+LABEL org.label-schema.build-date="2021-03-06T05:54:38.141101Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="ff17057114c2199c9c1bbecc727003a907c0db7a" \
+  org.label-schema.vcs-ref="3e5a16cfec50876d20ea77b075070932c6464c7d" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.11.1" \
-  org.opencontainers.image.created="2021-02-15T13:44:09.394032Z" \
+  org.label-schema.version="7.11.2" \
+  org.opencontainers.image.created="2021-03-06T05:54:38.141101Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="ff17057114c2199c9c1bbecc727003a907c0db7a" \
+  org.opencontainers.image.revision="3e5a16cfec50876d20ea77b075070932c6464c7d" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.11.1"
+  org.opencontainers.image.version="7.11.2"
 
 ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
 # Dummy overridable parameter parsed by entrypoint
