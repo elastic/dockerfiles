@@ -100,7 +100,7 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2021-03-18T06:35:11.920Z" \
+LABEL org.label-schema.build-date="2021-03-18T06:26:25.940Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
@@ -110,7 +110,7 @@ LABEL org.label-schema.build-date="2021-03-18T06:35:11.920Z" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
   org.label-schema.version="7.12.0" \
-  org.opencontainers.image.created="2021-03-18T06:35:11.920Z" \
+  org.opencontainers.image.created="2021-03-18T06:26:25.940Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.revision="b7f9a41f486a2910ef22a1274ec734219c35ca3e" \
