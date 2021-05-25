@@ -4,8 +4,19 @@ FROM centos:7
 # Install Java and the "which" command, which is needed by Logstash's shell
 # scripts.
 # Minimal distributions also require findutils tar gzip (procps for integration tests)
-RUN yum update -y && yum install -y procps findutils tar gzip which shadow-utils && \
-    yum clean all
+
+# on aarch64, yum does not pick the right `bind-license` package for some reason
+# here we install a specific noarch RPM.
+RUN for iter in {1..10}; do yum update -y && \
+    yum install -y procps findutils tar gzip which shadow-utils && \
+    yum clean all && \
+yum clean metadata && \
+exit_code=0 && break || exit_code=$? && \
+    echo "packaging error: retry $iter in 10s" && \
+    yum clean all && \
+yum clean metadata && \
+sleep 10; done; \
+    (exit $exit_code)
 
 # Provide a non-root user to run the process.
 RUN groupadd --gid 1000 logstash && \
@@ -14,9 +25,9 @@ RUN groupadd --gid 1000 logstash && \
       logstash
 
 # Add Logstash itself.
-RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-7.12.1-linux-$(arch).tar.gz | \
+RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-7.13.0-linux-$(arch).tar.gz | \
     tar zxf - -C /usr/share && \
-    mv /usr/share/logstash-7.12.1 /usr/share/logstash && \
+    mv /usr/share/logstash-7.13.0 /usr/share/logstash && \
     chown --recursive logstash:logstash /usr/share/logstash/ && \
     chown -R logstash:root /usr/share/logstash && \
     chmod -R g=u /usr/share/logstash && \
@@ -59,15 +70,15 @@ LABEL  org.label-schema.schema-version="1.0" \
   org.opencontainers.image.vendor="Elastic" \
   org.label-schema.name="logstash" \
   org.opencontainers.image.title="logstash" \
-  org.label-schema.version="7.12.1" \
-  org.opencontainers.image.version="7.12.1" \
+  org.label-schema.version="7.13.0" \
+  org.opencontainers.image.version="7.13.0" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
   org.label-schema.license="Elastic License" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
-  org.label-schema.build-date=2021-04-20T19:51:54Z \
-org.opencontainers.image.created=2021-04-20T19:51:54Z
+  org.label-schema.build-date=2021-05-19T21:17:24Z \
+org.opencontainers.image.created=2021-05-19T21:17:24Z
 
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
