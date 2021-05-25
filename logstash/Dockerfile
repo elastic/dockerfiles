@@ -3,7 +3,10 @@ FROM centos:7
 
 # Install Java and the "which" command, which is needed by Logstash's shell
 # scripts.
-RUN yum update -y && yum install -y java-1.8.0-openjdk-devel which && \
+# NOTE: pinning jdk 1.8.0.282 as .292 has an issue creating keystores
+# Logstash issue: https://github.com/elastic/logstash/issues/12917
+# OpenJDK issue: https://bugs.openjdk.java.net/browse/JDK-8266261
+RUN yum update -y && yum install -y java-1.8.0-openjdk-devel-1.8.0.282.b08 java-1.8.0-openjdk-headless-1.8.0.282.b08 which && \
     yum clean all
 
 # Provide a non-root user to run the process.
@@ -13,9 +16,9 @@ RUN groupadd --gid 1000 logstash && \
       logstash
 
 # Add Logstash itself.
-RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-6.8.15.tar.gz | \
+RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-6.8.16.tar.gz | \
     tar zxf - -C /usr/share && \
-    mv /usr/share/logstash-6.8.15 /usr/share/logstash && \
+    mv /usr/share/logstash-6.8.16 /usr/share/logstash && \
     chown --recursive logstash:logstash /usr/share/logstash/ && \
     chown -R logstash:root /usr/share/logstash && \
     chmod -R g=u /usr/share/logstash && \
@@ -52,7 +55,7 @@ EXPOSE 9600 5044
 LABEL org.label-schema.schema-version="1.0" \
   org.label-schema.vendor="Elastic" \
   org.label-schema.name="logstash" \
-  org.label-schema.version="6.8.15" \
+  org.label-schema.version="6.8.16" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
 license="Elastic License"

@@ -32,9 +32,9 @@ RUN groupadd -g 1000 elasticsearch && \
 
 WORKDIR /usr/share/elasticsearch
 
-RUN cd /opt && curl --retry 8 -s -L -O https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-6.8.15.tar.gz && cd -
+RUN cd /opt && curl --retry 8 -s -L -O https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-6.8.16.tar.gz && cd -
 
-RUN tar zxf /opt/elasticsearch-6.8.15.tar.gz --strip-components=1
+RUN tar zxf /opt/elasticsearch-6.8.16.tar.gz --strip-components=1
 RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env \
     && sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
 RUN mkdir -p config data logs
@@ -78,25 +78,25 @@ RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh && \
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2021-03-18T06:33:32.588487Z" \
+LABEL org.label-schema.build-date="2021-05-21T19:27:57.985321Z" \
   org.label-schema.license="Elastic-License" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="c9a8c60f59a902dfa018abda97b195f7ba9f29aa" \
+  org.label-schema.vcs-ref="1f62092a874cdc73ae87e6f8361ae2b6dc4a87f3" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="6.8.15" \
-  org.opencontainers.image.created="2021-03-18T06:33:32.588487Z" \
+  org.label-schema.version="6.8.16" \
+  org.opencontainers.image.created="2021-05-21T19:27:57.985321Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License" \
-  org.opencontainers.image.revision="c9a8c60f59a902dfa018abda97b195f7ba9f29aa" \
+  org.opencontainers.image.revision="1f62092a874cdc73ae87e6f8361ae2b6dc4a87f3" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="6.8.15"
+  org.opencontainers.image.version="6.8.16"
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # Dummy overridable parameter parsed by entrypoint
