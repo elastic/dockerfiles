@@ -34,7 +34,7 @@ RUN set -eux ; \
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /opt/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-7.13.2-linux-$(arch).tar.gz
+RUN curl --retry 10 -S -L --output /opt/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-7.13.3-linux-$(arch).tar.gz
 
 RUN tar -zxf /opt/elasticsearch.tar.gz --strip-components=1
 
@@ -111,25 +111,25 @@ RUN chmod g=u /etc/passwd && \
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2021-06-10T21:01:55.251515791Z" \
+LABEL org.label-schema.build-date="2021-07-02T12:06:10.804015202Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="4d960a0733be83dd2543ca018aa4ddc42e956800" \
+  org.label-schema.vcs-ref="5d21bea28db1e89ecc1f66311ebdec9dc3aa7d64" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.13.2" \
-  org.opencontainers.image.created="2021-06-10T21:01:55.251515791Z" \
+  org.label-schema.version="7.13.3" \
+  org.opencontainers.image.created="2021-07-02T12:06:10.804015202Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="4d960a0733be83dd2543ca018aa4ddc42e956800" \
+  org.opencontainers.image.revision="5d21bea28db1e89ecc1f66311ebdec9dc3aa7d64" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.13.2"
+  org.opencontainers.image.version="7.13.3"
 
 ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
 # Dummy overridable parameter parsed by entrypoint
