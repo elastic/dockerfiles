@@ -51,6 +51,7 @@ kibana_vars=(
     elasticsearch.pingTimeout
     elasticsearch.requestHeadersWhitelist
     elasticsearch.requestTimeout
+    elasticsearch.serviceAccountToken
     elasticsearch.shardTimeout
     elasticsearch.sniffInterval
     elasticsearch.sniffOnConnectionFault
@@ -369,16 +370,11 @@ kibana_vars=(
     xpack.security.authc.saml.maxRedirectURLSize
     xpack.security.authc.saml.realm
     xpack.security.authc.selector.enabled
-    xpack.security.authProviders
     xpack.security.cookieName
     xpack.security.enabled
     xpack.security.encryptionKey
     xpack.security.loginAssistanceMessage
-    xpack.security.loginAssistanceMessage
     xpack.security.loginHelp
-    xpack.security.public.hostname
-    xpack.security.public.port
-    xpack.security.public.protocol
     xpack.security.sameSiteCookies
     xpack.security.secureCookies
     xpack.security.session.cleanupInterval
@@ -386,7 +382,6 @@ kibana_vars=(
     xpack.security.session.lifespan
     xpack.security.sessionTimeout
     xpack.securitySolution.alertMergeStrategy
-    xpack.securitySolution.alertResultListDefaultDateRange
     xpack.securitySolution.endpointResultListDefaultFirstPageIndex
     xpack.securitySolution.endpointResultListDefaultPageSize
     xpack.securitySolution.maxRuleImportExportSize
@@ -394,7 +389,6 @@ kibana_vars=(
     xpack.securitySolution.maxTimelineImportExportSize
     xpack.securitySolution.maxTimelineImportPayloadBytes
     xpack.securitySolution.packagerTaskInterval
-    xpack.securitySolution.validateArtifactDownloads
     xpack.securitySolution.prebuiltRulesFromFileSystem
     xpack.securitySolution.prebuiltRulesFromSavedObjects
     xpack.spaces.enabled
