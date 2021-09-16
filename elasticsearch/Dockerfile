@@ -15,7 +15,7 @@ ENV TARBALL_URL https://curl.haxx.se/download/curl-${VERSION}.tar.xz
 ENV TARBALL_PATH curl-${VERSION}.tar.xz
 
 # Install dependencies
-RUN for iter in {1..10}; do \
+RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
       apk add gnupg gcc make musl-dev openssl-dev openssl-libs-static file && \
       exit_code=0 && break || \
         exit_code=$? && echo "apk error: retry $iter in 10s" && sleep 10; \
@@ -29,7 +29,7 @@ WORKDIR /work
 RUN function retry_wget() { \
       local URL="$1" ; \
       local DEST="$2" ; \
-      for iter in {1..10}; do \
+      for iter in 1 2 3 4 5 6 7 8 9 10; do \
         wget "$URL" -O "$DEST" && \
         exit_code=0 && break || \
           exit_code=$? && echo "wget error: retry $iter in 10s" && sleep 10; \
@@ -165,9 +165,9 @@ FROM centos:8 AS builder
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /opt/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.0.0-alpha1-linux-$(arch).tar.gz
+RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.0.0-alpha2-linux-$(arch).tar.gz
 
-RUN tar -zxf /opt/elasticsearch.tar.gz --strip-components=1
+RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1
 
 # The distribution includes a `config` directory, no need to create it
 COPY config/elasticsearch.yml config/
@@ -236,34 +236,33 @@ RUN chmod g=u /etc/passwd && \
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2021-08-03T20:46:41.477290628Z" \
+LABEL org.label-schema.build-date="2021-09-11T04:08:03.522358073Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="b11c15b7e0af64f90c3eb9c52c2534b4f143a070" \
+  org.label-schema.vcs-ref="c4aef6f1a6b450952de62640948d2501c85eecec" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.0.0-alpha1" \
-  org.opencontainers.image.created="2021-08-03T20:46:41.477290628Z" \
+  org.label-schema.version="8.0.0-alpha2" \
+  org.opencontainers.image.created="2021-09-11T04:08:03.522358073Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="b11c15b7e0af64f90c3eb9c52c2534b4f143a070" \
+  org.opencontainers.image.revision="c4aef6f1a6b450952de62640948d2501c85eecec" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.0.0-alpha1"
-
-USER elasticsearch:root
+  org.opencontainers.image.version="8.0.0-alpha2"
 
 # Our actual entrypoint is `tini`, a minimal but functional init program. It
 # calls the entrypoint we provide, while correctly forwarding signals.
 ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
-
 # Dummy overridable parameter parsed by entrypoint
 CMD ["eswrapper"]
+
+USER elasticsearch:root
 
 ################################################################################
 # End of multi-stage Dockerfile
