@@ -51,6 +51,7 @@ kibana_vars=(
     elasticsearch.pingTimeout
     elasticsearch.requestHeadersWhitelist
     elasticsearch.requestTimeout
+    elasticsearch.serviceAccountToken
     elasticsearch.shardTimeout
     elasticsearch.sniffInterval
     elasticsearch.sniffOnConnectionFault
@@ -107,6 +108,7 @@ kibana_vars=(
     map.tilemap.options.subdomains
     map.tilemap.url
     migrations.batchSize
+    migrations.maxBatchSizeBytes
     migrations.enableV2
     migrations.pollInterval
     migrations.retryAttempts
@@ -190,6 +192,7 @@ kibana_vars=(
     telemetry.enabled
     telemetry.optIn
     telemetry.optInStatusUrl
+    telemetry.sendUsageTo
     telemetry.sendUsageFrom
     tilemap.options.attribution
     tilemap.options.maxZoom
@@ -386,7 +389,6 @@ kibana_vars=(
     xpack.security.session.lifespan
     xpack.security.sessionTimeout
     xpack.securitySolution.alertMergeStrategy
-    xpack.securitySolution.alertResultListDefaultDateRange
     xpack.securitySolution.alertIgnoreFields
     xpack.securitySolution.endpointResultListDefaultFirstPageIndex
     xpack.securitySolution.endpointResultListDefaultPageSize
@@ -395,7 +397,6 @@ kibana_vars=(
     xpack.securitySolution.maxTimelineImportExportSize
     xpack.securitySolution.maxTimelineImportPayloadBytes
     xpack.securitySolution.packagerTaskInterval
-    xpack.securitySolution.validateArtifactDownloads
     xpack.securitySolution.prebuiltRulesFromFileSystem
     xpack.securitySolution.prebuiltRulesFromSavedObjects
     xpack.spaces.enabled
