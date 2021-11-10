@@ -15,7 +15,7 @@ FROM centos:8 AS builder
 RUN cd /opt && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-7.15.1-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-7.15.2-linux-$(arch).tar.gz && \
   cd -
 
 
@@ -85,7 +85,7 @@ COPY --chown=1000:0 config/kibana.yml /usr/share/kibana/config/kibana.yml
 
 # Add the launcher/wrapper script. It knows how to interpret environment
 # variables and translate them to Kibana CLI options.
-COPY --chown=1000:0 bin/kibana-docker /usr/local/bin/
+COPY bin/kibana-docker /usr/local/bin/
 
 # Ensure gid 0 write permissions for OpenShift.
 RUN chmod g+ws /usr/share/kibana && \
@@ -100,25 +100,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2021-10-07T20:54:01.012Z" \
+LABEL org.label-schema.build-date="2021-11-04T13:05:16.466Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="c1aa1ef8dc38b511ce4a647fe92ca0348aadd834" \
+  org.label-schema.vcs-ref="1fb7cb47c5ffdbd0fae1b8ac24fd84158f33e085" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.15.1" \
-  org.opencontainers.image.created="2021-10-07T20:54:01.012Z" \
+  org.label-schema.version="7.15.2" \
+  org.opencontainers.image.created="2021-11-04T13:05:16.466Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="c1aa1ef8dc38b511ce4a647fe92ca0348aadd834" \
+  org.opencontainers.image.revision="1fb7cb47c5ffdbd0fae1b8ac24fd84158f33e085" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.15.1"
+  org.opencontainers.image.version="7.15.2"
 
 
 USER kibana
