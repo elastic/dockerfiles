@@ -15,18 +15,19 @@ FROM centos:8 AS builder
 RUN cd /opt && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-7.15.2-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-7.16.0-linux-$(arch).tar.gz && \
   cd -
 
 
 RUN mkdir /usr/share/kibana
 WORKDIR /usr/share/kibana
-RUN tar --strip-components=1 -zxf /opt/kibana.tar.gz
+RUN tar --strip-components=1 -zxf /tmp/kibana.tar.gz
 # Ensure that group permissions are the same as user permissions.
 # This will help when relying on GID-0 to run Kibana, rather than UID-1000.
 # OpenShift does this, for example.
 # REF: https://docs.openshift.org/latest/creating_images/guidelines.html
 RUN chmod -R g=u /usr/share/kibana
+
 
 ################################################################################
 # Build stage 1 (the actual Kibana image):
@@ -100,29 +101,31 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2021-11-04T13:05:16.466Z" \
+LABEL org.label-schema.build-date="2021-12-02T15:50:57.541Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="1fb7cb47c5ffdbd0fae1b8ac24fd84158f33e085" \
+  org.label-schema.vcs-ref="b7b724b4f677db8b3ca0b7d5a35a822fef9766a0" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.15.2" \
-  org.opencontainers.image.created="2021-11-04T13:05:16.466Z" \
+  org.label-schema.version="7.16.0" \
+  org.opencontainers.image.created="2021-12-02T15:50:57.541Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="1fb7cb47c5ffdbd0fae1b8ac24fd84158f33e085" \
+  org.opencontainers.image.revision="b7b724b4f677db8b3ca0b7d5a35a822fef9766a0" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.15.2"
+  org.opencontainers.image.version="7.16.0"
 
-
-USER kibana
 
 ENTRYPOINT ["/bin/tini", "--"]
 
+
 CMD ["/usr/local/bin/kibana-docker"]
+
+
+USER kibana

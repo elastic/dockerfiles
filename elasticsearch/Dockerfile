@@ -5,36 +5,19 @@
 ################################################################################
 
 ################################################################################
-# Step 1. Create a minimal root filesystem directory. This will form the basis
-# for our image.
+# Build stage 0 `builder`:
+# Extract Elasticsearch artifact
 ################################################################################
-FROM centos:8 AS rootfs
+FROM ubuntu:20.04 AS builder
 
-ENV TINI_VERSION 0.19.0
+# Install required packages to extract the Elasticsearch distribution
 
-# Start off with an up-to-date system
-RUN yum update --setopt=tsflags=nodocs -y
-
-# Create a directory into which we will install files
-RUN mkdir /rootfs
-
-# Create required devices
-RUN mkdir -m 755 /rootfs/dev && \
-    mknod -m 600 /rootfs/dev/console c 5 1 && \
-    mknod -m 600 /rootfs/dev/initctl p && \
-    mknod -m 666 /rootfs/dev/full c 1 7 && \
-    mknod -m 666 /rootfs/dev/null c 1 3 && \
-    mknod -m 666 /rootfs/dev/ptmx c 5 2 && \
-    mknod -m 666 /rootfs/dev/random c 1 8 && \
-    mknod -m 666 /rootfs/dev/tty c 5 0 && \
-    mknod -m 666 /rootfs/dev/tty0 c 4 0 && \
-    mknod -m 666 /rootfs/dev/urandom c 1 9 && \
-    mknod -m 666 /rootfs/dev/zero c 1 5
-
-# Install a minimal set of dependencies, and some for Elasticsearch
-RUN yum --installroot=/rootfs --releasever=/ --setopt=tsflags=nodocs \
-      --setopt=group_package_types=mandatory -y  \
-      install bash curl findutils nc procps-ng shadow-utils tar unzip yum zip
+RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
+      apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl ca-certificates-java && \
+      exit_code=0 && break || \
+        exit_code=$? && echo "apt-get error: retry $iter in 10s" && sleep 10; \
+    done; \
+    exit $exit_code
 
 # `tini` is a tiny but valid init for containers. This is used to cleanly
 # control how ES and any child processes are shut down.
@@ -42,57 +25,26 @@ RUN yum --installroot=/rootfs --releasever=/ --setopt=tsflags=nodocs \
 # The tini GitHub page gives instructions for verifying the binary using
 # gpg, but the keyservers are slow to return the key and this can fail the
 # build. Instead, we check the binary against the published checksum.
-RUN set -e ; \
-    TINI_BIN="" ; \
+RUN set -eux ; \
+    tini_bin="" ; \
     case "$(arch)" in \
-        aarch64) \
-            TINI_BIN='tini-arm64' ; \
-            ;; \
-        x86_64) \
-            TINI_BIN='tini-amd64' ; \
-            ;; \
-        *) echo >&2 "Unsupported architecture $(arch)" ; exit 1 ;; \
+        aarch64) tini_bin='tini-arm64' ;; \
+        x86_64)  tini_bin='tini-amd64' ;; \
+        *) echo >&2 ; echo >&2 "Unsupported architecture $(arch)" ; echo >&2 ; exit 1 ;; \
     esac ; \
-    curl --retry 10 -S -L -O "https://github.com/krallin/tini/releases/download/v0.19.0/${TINI_BIN}" ; \
-    curl --retry 10 -S -L -O "https://github.com/krallin/tini/releases/download/v0.19.0/${TINI_BIN}.sha256sum" ; \
-    sha256sum -c "${TINI_BIN}.sha256sum" ; \
-    rm "${TINI_BIN}.sha256sum" ; \
-    mv "${TINI_BIN}" /rootfs/bin/tini ; \
-    chmod 0555 /rootfs/bin/tini
-
-RUN echo "NETWORKING=yes" > /rootfs/etc/sysconfig/network && \
-    echo "HOSTNAME=localhost.localdomain" >> /rootfs/etc/sysconfig/network
-
-# Cleanup the filesystem
-RUN yum --installroot=/rootfs -y clean all && \
-    cd /rootfs && \
-    rm -rf \
-        sbin/sln \
-        usr/{{lib,share}/locale,{lib,lib64}/gconv,bin/localedef,sbin/build-locale-archive} \
-        usr/share/{man,doc,info,gnome/help} \
-        usr/share/cracklib \
-        usr/share/i18n \
-        var/cache/yum && \
-    mkdir -p --mode=0755 var/cache/yum
-
-# ldconfig
-RUN rm -rf /rootfs/etc/ld.so.cache /rootfs/var/cache/ldconfig && \
-    mkdir -p --mode=0755 /rootfs/var/cache/ldconfig
-
-# Ensure that there are no files with setuid or setgid, in order to mitigate "stackclash" attacks.
-RUN find /rootfs -xdev -perm -4000 -exec chmod ug-s {} +
-
-################################################################################
-# Step 2. Fetch the Elasticsearch distribution and configure it for Docker
-################################################################################
-FROM centos:8 AS builder
+    curl --retry 10 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin} ; \
+    curl --retry 10 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin}.sha256sum ; \
+    sha256sum -c ${tini_bin}.sha256sum ; \
+    rm ${tini_bin}.sha256sum ; \
+    mv ${tini_bin} /bin/tini ; \
+    chmod 0555 /bin/tini
 
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /opt/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-7.15.2-linux-$(arch).tar.gz
+RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-7.16.0-linux-$(arch).tar.gz
 
-RUN tar -zxf /opt/elasticsearch.tar.gz --strip-components=1
+RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1
 
 # The distribution includes a `config` directory, no need to create it
 COPY config/elasticsearch.yml config/
@@ -119,23 +71,39 @@ RUN sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elas
     find config -type f -exec chmod 0664 {} +
 
 ################################################################################
-# Stage 3. Build the final image, using the rootfs above as the basis, and
-# copying in the Elasticsearch distribution
+# Build stage 1 (the actual Elasticsearch image):
+#
+# Copy elasticsearch from stage 0
+# Add entrypoint
 ################################################################################
-FROM scratch
 
-# Setup the initial filesystem.
-COPY --from=rootfs /rootfs /
+FROM ubuntu:20.04
+
+RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
+      export DEBIAN_FRONTEND=noninteractive && \
+apt-get update && \
+apt-get upgrade -y && \
+apt-get install -y --no-install-recommends curl netcat zip unzip vim-tiny  && \
+apt-get clean && \
+rm -rf /var/lib/apt/lists/* && \
+      exit_code=0 && break || \
+        exit_code=$? && echo "apt-get error: retry $iter in 10s" && sleep 10; \
+    done; \
+    exit $exit_code
 
 RUN groupadd -g 1000 elasticsearch && \
-    adduser -u 1000 -g 1000 -G 0 -d /usr/share/elasticsearch elasticsearch && \
-    chmod 0755 /usr/share/elasticsearch && \
+    adduser --uid 1000 --gid 1000 --home /usr/share/elasticsearch elasticsearch && \
+    adduser elasticsearch root && \
     chown -R 0:0 /usr/share/elasticsearch
 
 ENV ELASTIC_CONTAINER true
 
 WORKDIR /usr/share/elasticsearch
 COPY --from=builder --chown=0:0 /usr/share/elasticsearch /usr/share/elasticsearch
+
+COPY --from=builder --chown=0:0 /bin/tini /bin/tini
+
+COPY --from=builder --chown=0:0 /etc/ssl/certs/java/cacerts /etc/ssl/certs/java/cacerts
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 
@@ -155,36 +123,36 @@ COPY bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod g=u /etc/passwd && \
     chmod 0555 /usr/local/bin/docker-entrypoint.sh && \
     find / -xdev -perm -4000 -exec chmod ug-s {} + && \
-    ln -sf /etc/pki/ca-trust/extracted/java/cacerts /usr/share/elasticsearch/jdk/lib/security/cacerts && \
+    ln -sf /etc/ssl/certs/java/cacerts \
+      /usr/share/elasticsearch/jdk/lib/security/cacerts && \
     chmod 0775 /usr/share/elasticsearch && \
     chown elasticsearch bin config config/jvm.options.d data logs plugins
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2021-11-04T14:04:42.515624022Z" \
+LABEL org.label-schema.build-date="2021-12-02T21:11:20.900793098Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="93d5a7f6192e8a1a12e154a2b81bf6fa7309da0c" \
+  org.label-schema.vcs-ref="6fc81662312141fe7691d7c1c91b8658ac17aa0d" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.15.2" \
-  org.opencontainers.image.created="2021-11-04T14:04:42.515624022Z" \
+  org.label-schema.version="7.16.0" \
+  org.opencontainers.image.created="2021-12-02T21:11:20.900793098Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="93d5a7f6192e8a1a12e154a2b81bf6fa7309da0c" \
+  org.opencontainers.image.revision="6fc81662312141fe7691d7c1c91b8658ac17aa0d" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.15.2"
+  org.opencontainers.image.version="7.16.0"
 
 # Our actual entrypoint is `tini`, a minimal but functional init program. It
 # calls the entrypoint we provide, while correctly forwarding signals.
 ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
-
 # Dummy overridable parameter parsed by entrypoint
 CMD ["eswrapper"]
 
