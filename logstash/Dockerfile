@@ -25,9 +25,9 @@ RUN groupadd --gid 1000 logstash && \
       logstash
 
 # Add Logstash itself.
-RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-7.15.2-linux-$(arch).tar.gz | \
+RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-7.16.0-linux-$(arch).tar.gz | \
     tar zxf - -C /usr/share && \
-    mv /usr/share/logstash-7.15.2 /usr/share/logstash && \
+    mv /usr/share/logstash-7.16.0 /usr/share/logstash && \
     chown --recursive logstash:logstash /usr/share/logstash/ && \
     chown -R logstash:root /usr/share/logstash && \
     chmod -R g=u /usr/share/logstash && \
@@ -70,15 +70,15 @@ LABEL  org.label-schema.schema-version="1.0" \
   org.opencontainers.image.vendor="Elastic" \
   org.label-schema.name="logstash" \
   org.opencontainers.image.title="logstash" \
-  org.label-schema.version="7.15.2" \
-  org.opencontainers.image.version="7.15.2" \
+  org.label-schema.version="7.16.0" \
+  org.opencontainers.image.version="7.16.0" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
   org.label-schema.license="Elastic License" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
-  org.label-schema.build-date=2021-11-04T13:00:41Z \
-org.opencontainers.image.created=2021-11-04T13:00:41Z
+  org.label-schema.build-date=2021-12-02T15:46:09Z \
+org.opencontainers.image.created=2021-12-02T15:46:09Z
 
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
