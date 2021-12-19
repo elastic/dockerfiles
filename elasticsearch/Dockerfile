@@ -13,7 +13,7 @@ FROM ubuntu:20.04 AS builder
 # Install required packages to extract the Elasticsearch distribution
 
 RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
-      apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl ca-certificates-java && \
+      apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl  && \
       exit_code=0 && break || \
         exit_code=$? && echo "apt-get error: retry $iter in 10s" && sleep 10; \
     done; \
@@ -42,7 +42,7 @@ RUN set -eux ; \
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-7.16.1-linux-$(arch).tar.gz
+RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-7.16.2-linux-$(arch).tar.gz
 
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1
 
@@ -79,13 +79,16 @@ RUN sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elas
 
 FROM ubuntu:20.04
 
-RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
+# Change default shell to bash, then install required packages with retries.
+RUN yes no | dpkg-reconfigure dash && \
+    for iter in 1 2 3 4 5 6 7 8 9 10; do \
       export DEBIAN_FRONTEND=noninteractive && \
-apt-get update && \
-apt-get upgrade -y && \
-apt-get install -y --no-install-recommends curl netcat zip unzip vim-tiny  && \
-apt-get clean && \
-rm -rf /var/lib/apt/lists/* && \
+      apt-get update && \
+      apt-get upgrade -y && \
+      apt-get install -y --no-install-recommends \
+        ca-certificates curl netcat p11-kit unzip vim-tiny zip && \
+      apt-get clean && \
+      rm -rf /var/lib/apt/lists/* && \
       exit_code=0 && break || \
         exit_code=$? && echo "apt-get error: retry $iter in 10s" && sleep 10; \
     done; \
@@ -99,11 +102,9 @@ RUN groupadd -g 1000 elasticsearch && \
 ENV ELASTIC_CONTAINER true
 
 WORKDIR /usr/share/elasticsearch
+
 COPY --from=builder --chown=0:0 /usr/share/elasticsearch /usr/share/elasticsearch
-
 COPY --from=builder --chown=0:0 /bin/tini /bin/tini
-
-COPY --from=builder --chown=0:0 /etc/ssl/certs/java/cacerts /etc/ssl/certs/java/cacerts
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 
@@ -123,32 +124,35 @@ COPY bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod g=u /etc/passwd && \
     chmod 0555 /usr/local/bin/docker-entrypoint.sh && \
     find / -xdev -perm -4000 -exec chmod ug-s {} + && \
-    ln -sf /etc/ssl/certs/java/cacerts \
-      /usr/share/elasticsearch/jdk/lib/security/cacerts && \
     chmod 0775 /usr/share/elasticsearch && \
     chown elasticsearch bin config config/jvm.options.d data logs plugins
 
+# Update "cacerts" bundle to use Ubuntu's CA certificates (and make sure it
+# stays up-to-date with changes to Ubuntu's store)
+COPY bin/docker-openjdk /etc/ca-certificates/update.d/docker-openjdk
+RUN /etc/ca-certificates/update.d/docker-openjdk
+
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2021-12-11T05:09:38.080326932Z" \
+LABEL org.label-schema.build-date="2021-12-19T00:16:42.756969090Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="5b38441b16b1ebb16a27c107a4c3865776e20c53" \
+  org.label-schema.vcs-ref="2b937c44140b6559905130a8650c64dbd0879cfb" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.16.1" \
-  org.opencontainers.image.created="2021-12-11T05:09:38.080326932Z" \
+  org.label-schema.version="7.16.2" \
+  org.opencontainers.image.created="2021-12-19T00:16:42.756969090Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="5b38441b16b1ebb16a27c107a4c3865776e20c53" \
+  org.opencontainers.image.revision="2b937c44140b6559905130a8650c64dbd0879cfb" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.16.1"
+  org.opencontainers.image.version="7.16.2"
 
 # Our actual entrypoint is `tini`, a minimal but functional init program. It
 # calls the entrypoint we provide, while correctly forwarding signals.
