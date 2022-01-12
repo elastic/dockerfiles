@@ -35,7 +35,7 @@ RUN chmod -R g=u /usr/share/kibana
 # Copy kibana from stage 0
 # Add entrypoint
 ################################################################################
-FROM 
+FROM ubuntu:20.04
 EXPOSE 5601
 
 
