@@ -1,33 +1,32 @@
 # This Dockerfile was generated from templates/Dockerfile.j2
-FROM centos:7
+FROM ubuntu:20.04
 
-# Install Java and the "which" command, which is needed by Logstash's shell
-# scripts.
-# Minimal distributions also require findutils tar gzip (procps for integration tests)
-
-# on aarch64, yum does not pick the right `bind-license` package for some reason
-# here we install a specific noarch RPM.
-RUN for iter in {1..10}; do yum update -y && \
-    yum install -y procps findutils tar gzip which shadow-utils && \
-    yum clean all && \
-yum clean metadata && \
+RUN for iter in {1..10}; do \
+export DEBIAN_FRONTEND=noninteractive && \
+apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get install -y procps findutils tar gzip curl && \
+apt-get install -y locales && \
+apt-get clean all && \
+locale-gen 'en_US.UTF-8' && \
+    apt-get clean metadata && \
 exit_code=0 && break || exit_code=$? && \
     echo "packaging error: retry $iter in 10s" && \
-    yum clean all && \
-yum clean metadata && \
+    apt-get clean all && \
+apt-get clean metadata && \
 sleep 10; done; \
     (exit $exit_code)
 
 # Provide a non-root user to run the process.
 RUN groupadd --gid 1000 logstash && \
     adduser --uid 1000 --gid 1000 \
-      --home-dir /usr/share/logstash --no-create-home \
+      --home /usr/share/logstash --no-create-home \
       logstash
 
 # Add Logstash itself.
-RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.0.0-beta1-linux-$(arch).tar.gz | \
+RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.0.0-rc1-linux-$(arch).tar.gz | \
     tar zxf - -C /usr/share && \
-    mv /usr/share/logstash-8.0.0-beta1 /usr/share/logstash && \
+    mv /usr/share/logstash-8.0.0-rc1 /usr/share/logstash && \
     chown --recursive logstash:logstash /usr/share/logstash/ && \
     chown -R logstash:root /usr/share/logstash && \
     chmod -R g=u /usr/share/logstash && \
@@ -70,15 +69,15 @@ LABEL  org.label-schema.schema-version="1.0" \
   org.opencontainers.image.vendor="Elastic" \
   org.label-schema.name="logstash" \
   org.opencontainers.image.title="logstash" \
-  org.label-schema.version="8.0.0-beta1" \
-  org.opencontainers.image.version="8.0.0-beta1" \
+  org.label-schema.version="8.0.0-rc1" \
+  org.opencontainers.image.version="8.0.0-rc1" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
   org.label-schema.license="Elastic License" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
-  org.label-schema.build-date=2021-11-04T12:38:26Z \
-org.opencontainers.image.created=2021-11-04T12:38:26Z
+  org.label-schema.build-date=2022-01-05T17:51:57Z \
+org.opencontainers.image.created=2022-01-05T17:51:57Z
 
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
