@@ -38,7 +38,17 @@ RUN chmod -R g=u /usr/share/kibana
 FROM ubuntu:20.04
 EXPOSE 5601
 
-
+RUN for iter in {1..10}; do \
+      export DEBIAN_FRONTEND=noninteractive && \
+      apt-get update  && \
+      apt-get upgrade -y  && \
+      apt-get install -y --no-install-recommends \
+       fontconfig fonts-liberation libnss3 libfontconfig1 ca-certificates curl && \
+      apt-get clean && \
+      rm -rf /var/lib/apt/lists/* && exit_code=0 && break || exit_code=$? && echo "apt-get error: retry $iter in 10s" && \
+      sleep 10; \
+    done; \
+    (exit $exit_code)
 # Add an init process, check the checksum to make sure it's a match
 RUN set -e ; \
     TINI_BIN="" ; \
