@@ -15,7 +15,7 @@ FROM centos:8 AS builder
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-7.16.2-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-7.16.3-linux-$(arch).tar.gz && \
   cd -
 
 
@@ -101,25 +101,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2021-12-18T19:47:46.695Z" \
+LABEL org.label-schema.build-date="2022-01-06T23:17:40.113Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="9b678a13a6a3f45286f1d21856a7536a9297f42f" \
+  org.label-schema.vcs-ref="33b4188edcdda8e9636e397d3832a98bc7dcbae3" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.16.2" \
-  org.opencontainers.image.created="2021-12-18T19:47:46.695Z" \
+  org.label-schema.version="7.16.3" \
+  org.opencontainers.image.created="2022-01-06T23:17:40.113Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="9b678a13a6a3f45286f1d21856a7536a9297f42f" \
+  org.opencontainers.image.revision="33b4188edcdda8e9636e397d3832a98bc7dcbae3" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.16.2"
+  org.opencontainers.image.version="7.16.3"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
