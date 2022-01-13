@@ -1,0 +1,19 @@
+name: Logstash Docker Image CI
+
+on:
+  push:
+    branches: [ "6.8", "7.16", "7.17", "8.0" ]
+  pull_request:
+    branches: [ "6.8", "7.16", "7.17", "8.0" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Build the Logstash Docker image
+      run: docker build logstash
