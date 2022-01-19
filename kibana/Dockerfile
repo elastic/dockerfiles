@@ -9,7 +9,7 @@
 # Build stage 0 `builder`:
 # Extract Kibana artifact
 ################################################################################
-FROM  AS builder
+FROM ubuntu:20.04 AS builder
 
 
 RUN cd /tmp && \
