@@ -11,6 +11,7 @@
 ################################################################################
 FROM ubuntu:20.04 AS builder
 
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 
 RUN cd /tmp && \
   curl --retry 8 -s -L \
@@ -49,6 +50,7 @@ RUN for iter in {1..10}; do \
       sleep 10; \
     done; \
     (exit $exit_code)
+
 # Add an init process, check the checksum to make sure it's a match
 RUN set -e ; \
     TINI_BIN="" ; \
