@@ -11,7 +11,7 @@
 ################################################################################
 FROM ubuntu:20.04 AS builder
 
-
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
