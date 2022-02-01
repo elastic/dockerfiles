@@ -9,13 +9,14 @@
 # Build stage 0 `builder`:
 # Extract Kibana artifact
 ################################################################################
-FROM centos:8 AS builder
+FROM ubuntu:20.04 AS builder
 
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-7.16.3-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-7.17.0-linux-$(arch).tar.gz && \
   cd -
 
 
@@ -35,15 +36,17 @@ RUN chmod -R g=u /usr/share/kibana
 # Copy kibana from stage 0
 # Add entrypoint
 ################################################################################
-FROM centos:8
+FROM ubuntu:20.04
 EXPOSE 5601
 
-
 RUN for iter in {1..10}; do \
-      yum update --setopt=tsflags=nodocs -y && \
-      yum install --setopt=tsflags=nodocs -y \
-        fontconfig freetype shadow-utils nss  && \
-      yum clean all && exit_code=0 && break || exit_code=$? && echo "yum error: retry $iter in 10s" && \
+      export DEBIAN_FRONTEND=noninteractive && \
+      apt-get update  && \
+      apt-get upgrade -y  && \
+      apt-get install -y --no-install-recommends \
+       fontconfig fonts-liberation libnss3 libfontconfig1 ca-certificates curl && \
+      apt-get clean && \
+      rm -rf /var/lib/apt/lists/* && exit_code=0 && break || exit_code=$? && echo "apt-get error: retry $iter in 10s" && \
       sleep 10; \
     done; \
     (exit $exit_code)
@@ -101,25 +104,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2022-01-06T23:17:40.113Z" \
+LABEL org.label-schema.build-date="2022-01-28T08:41:40.944Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="33b4188edcdda8e9636e397d3832a98bc7dcbae3" \
+  org.label-schema.vcs-ref="60a9838d21b6420bbdb5a4d07099111b74c68ceb" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.16.3" \
-  org.opencontainers.image.created="2022-01-06T23:17:40.113Z" \
+  org.label-schema.version="7.17.0" \
+  org.opencontainers.image.created="2022-01-28T08:41:40.944Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="33b4188edcdda8e9636e397d3832a98bc7dcbae3" \
+  org.opencontainers.image.revision="60a9838d21b6420bbdb5a4d07099111b74c68ceb" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.16.3"
+  org.opencontainers.image.version="7.17.0"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
