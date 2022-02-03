@@ -12,10 +12,11 @@
 FROM ubuntu:20.04 AS builder
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
+
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.0.0-rc1-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-8.0.0-rc2-linux-$(arch).tar.gz && \
   cd -
 
 
@@ -49,6 +50,7 @@ RUN for iter in {1..10}; do \
       sleep 10; \
     done; \
     (exit $exit_code)
+
 # Add an init process, check the checksum to make sure it's a match
 RUN set -e ; \
     TINI_BIN="" ; \
@@ -102,25 +104,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2022-01-05T18:00:21.190Z" \
+LABEL org.label-schema.build-date="2022-01-31T21:13:59.193Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="51f4ded427abb6fd96c7d65e179fb367d450448c" \
+  org.label-schema.vcs-ref="57ca5e139a33dd2eed927ce98d8231a1f217cd15" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.0.0-rc1" \
-  org.opencontainers.image.created="2022-01-05T18:00:21.190Z" \
+  org.label-schema.version="8.0.0-rc2" \
+  org.opencontainers.image.created="2022-01-31T21:13:59.193Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="51f4ded427abb6fd96c7d65e179fb367d450448c" \
+  org.opencontainers.image.revision="57ca5e139a33dd2eed927ce98d8231a1f217cd15" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.0.0-rc1"
+  org.opencontainers.image.version="8.0.0-rc2"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
