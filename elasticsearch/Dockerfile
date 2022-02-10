@@ -66,7 +66,7 @@ RUN set -eux ; \
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.0.0-rc2-linux-$(arch).tar.gz
+RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.0.0-linux-$(arch).tar.gz
 
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1
 
@@ -161,7 +161,7 @@ RUN /etc/ca-certificates/update.d/docker-openjdk
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2022-02-01T00:31:13.327256649Z" \
+LABEL org.label-schema.build-date="2022-02-03T22:52:11.916594404Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
@@ -170,8 +170,8 @@ LABEL org.label-schema.build-date="2022-02-01T00:31:13.327256649Z" \
   org.label-schema.vcs-ref="1b6a7ece17463df5ff54a3e1302d825889aa1161" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.0.0-rc2" \
-  org.opencontainers.image.created="2022-02-01T00:31:13.327256649Z" \
+  org.label-schema.version="8.0.0" \
+  org.opencontainers.image.created="2022-02-03T22:52:11.916594404Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
   org.opencontainers.image.revision="1b6a7ece17463df5ff54a3e1302d825889aa1161" \
@@ -179,7 +179,7 @@ LABEL org.label-schema.build-date="2022-02-01T00:31:13.327256649Z" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.0.0-rc2"
+  org.opencontainers.image.version="8.0.0"
 
 # Our actual entrypoint is `tini`, a minimal but functional init program. It
 # calls the entrypoint we provide, while correctly forwarding signals.
