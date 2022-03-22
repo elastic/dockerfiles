@@ -5,29 +5,6 @@
 ################################################################################
 
 ################################################################################
-# Build stage 0 `zlib`:
-# Compile zlib for the current architecture
-################################################################################
-
-FROM ubuntu:20.04 AS zlib
-
-RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
-      apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl gcc make && \
-      exit_code=0 && break || \
-        exit_code=$? && echo "apt-get error: retry $iter in 10s" && sleep 10; \
-    done; \
-    exit $exit_code
-
-WORKDIR /tmp
-RUN curl --retry 10 -S -L -o zlib-1.2.8.tar.gz https://github.com/cloudflare/zlib/archive/refs/tags/v1.2.8.tar.gz
-RUN echo "7e393976368975446b263ae4143fb404bc33bf3b436e72007700b5b88e5be332cd461cdec42d31a4b6dffdca2368550f01b9fa1165d81c0aa818bbf2b1ac191e zlib-1.2.8.tar.gz" \
-      | sha512sum --check -
-RUN tar xf zlib-1.2.8.tar.gz
-
-WORKDIR /tmp/zlib-1.2.8
-RUN ./configure --prefix=/usr/local/cloudflare-zlib && make && make install
-
-################################################################################
 # Build stage 1 `builder`:
 # Extract Elasticsearch artifact
 ################################################################################
@@ -66,7 +43,7 @@ RUN set -eux ; \
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.1.0-linux-$(arch).tar.gz
+RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.1.1-linux-$(arch).tar.gz
 
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1
 
@@ -97,7 +74,6 @@ RUN sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elas
 ################################################################################
 # Build stage 2 (the actual Elasticsearch image):
 #
-# Copy zlib from stage 2
 # Copy elasticsearch from stage 1
 # Add entrypoint
 ################################################################################
@@ -130,10 +106,8 @@ WORKDIR /usr/share/elasticsearch
 
 COPY --from=builder --chown=0:0 /usr/share/elasticsearch /usr/share/elasticsearch
 COPY --from=builder --chown=0:0 /bin/tini /bin/tini
-COPY --from=zlib --chown=0:0 /usr/local/cloudflare-zlib /usr/local/cloudflare-zlib
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
-ENV ES_ZLIB_PATH /usr/local/cloudflare-zlib/lib
 
 COPY bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
@@ -161,25 +135,25 @@ RUN /etc/ca-certificates/update.d/docker-openjdk
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2022-03-03T17:48:45.112302284Z" \
+LABEL org.label-schema.build-date="2022-03-18T01:26:07.057434207Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="3700f7679f7d95e36da0b43762189bab189bc53a" \
+  org.label-schema.vcs-ref="d0925dd6f22e07b935750420a3155db6e5c58381" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.1.0" \
-  org.opencontainers.image.created="2022-03-03T17:48:45.112302284Z" \
+  org.label-schema.version="8.1.1" \
+  org.opencontainers.image.created="2022-03-18T01:26:07.057434207Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="3700f7679f7d95e36da0b43762189bab189bc53a" \
+  org.opencontainers.image.revision="d0925dd6f22e07b935750420a3155db6e5c58381" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.1.0"
+  org.opencontainers.image.version="8.1.1"
 
 # Our actual entrypoint is `tini`, a minimal but functional init program. It
 # calls the entrypoint we provide, while correctly forwarding signals.
