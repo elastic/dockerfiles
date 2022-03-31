@@ -2,9 +2,9 @@ name: Elasticsearch Docker Image CI
 
 on:
   push:
-    branches: [ "7.16", "7.17", "8.0" ]
+    branches: [ "7.16", "7.17", "8.0", "8.1" ]
   pull_request:
-    branches: [ "7.16", "7.17", "8.0" ]
+    branches: [ "7.16", "7.17", "8.0", "8.1" ]
 
 jobs:
 
