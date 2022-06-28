@@ -16,7 +16,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.2.3-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-8.3.0-linux-$(arch).tar.gz && \
   cd -
 
 
@@ -104,25 +104,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2022-06-08T15:31:13.765Z" \
+LABEL org.label-schema.build-date="2022-06-23T17:59:48.811Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="b6ed351db30239b669b6f4950d70d1d1bd9253c5" \
+  org.label-schema.vcs-ref="8a54c809495bc08782359073d9392f25c8eb6499" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.2.3" \
-  org.opencontainers.image.created="2022-06-08T15:31:13.765Z" \
+  org.label-schema.version="8.3.0" \
+  org.opencontainers.image.created="2022-06-23T17:59:48.811Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="b6ed351db30239b669b6f4950d70d1d1bd9253c5" \
+  org.opencontainers.image.revision="8a54c809495bc08782359073d9392f25c8eb6499" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.2.3"
+  org.opencontainers.image.version="8.3.0"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
