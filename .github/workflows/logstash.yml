@@ -2,9 +2,9 @@ name: Logstash Docker Image CI
 
 on:
   push:
-    branches: [ "7.16", "7.17", "8.0", "8.1", "8.2"]
+    branches: [ "7.16", "7.17", "8.0", "8.1", "8.2", "8.3"]
   pull_request:
-    branches: [ "7.16", "7.17", "8.0", "8.1", "8.2" ]
+    branches: [ "7.16", "7.17", "8.0", "8.1", "8.2", "8.3"]
 
 jobs:
 
