@@ -16,7 +16,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-7.17.5-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-7.17.6-linux-$(arch).tar.gz && \
   cd -
 
 
@@ -72,7 +72,7 @@ RUN set -e ; \
   chmod +x /bin/tini
 
 RUN mkdir /usr/share/fonts/local
-RUN curl -L -o /usr/share/fonts/local/NotoSansCJK-Regular.ttc https://github.com/googlefonts/noto-cjk/raw/NotoSansV2.001/NotoSansCJK-Regular.ttc
+RUN curl --retry 8 -S -L -o /usr/share/fonts/local/NotoSansCJK-Regular.ttc https://github.com/googlefonts/noto-cjk/raw/NotoSansV2.001/NotoSansCJK-Regular.ttc
 RUN echo "5dcd1c336cc9344cb77c03a0cd8982ca8a7dc97d620fd6c9c434e02dcb1ceeb3  /usr/share/fonts/local/NotoSansCJK-Regular.ttc" | sha256sum -c -
 RUN fc-cache -v
 
@@ -104,25 +104,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2022-06-23T11:10:20.179Z" \
+LABEL org.label-schema.build-date="2022-08-22T11:05:33.075Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="cd49631953cd3a928d6dbaadc722fe1d51191fa4" \
+  org.label-schema.vcs-ref="d2647b053b769d4517fbb14ce37765808a1b6e0c" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.17.5" \
-  org.opencontainers.image.created="2022-06-23T11:10:20.179Z" \
+  org.label-schema.version="7.17.6" \
+  org.opencontainers.image.created="2022-08-22T11:05:33.075Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="cd49631953cd3a928d6dbaadc722fe1d51191fa4" \
+  org.opencontainers.image.revision="d2647b053b769d4517fbb14ce37765808a1b6e0c" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.17.5"
+  org.opencontainers.image.version="7.17.6"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
