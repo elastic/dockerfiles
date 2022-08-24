@@ -25,17 +25,17 @@ RUN groupadd --gid 1000 logstash && \
 
 # Add Logstash itself.
 RUN \
-curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.3.3-linux-$(arch).tar.gz | \
+curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.4.0-linux-$(arch).tar.gz | \
     tar zxf - -C /usr/share && \
-    mv /usr/share/logstash-8.3.3 /usr/share/logstash && \
+    mv /usr/share/logstash-8.4.0 /usr/share/logstash && \
 chown --recursive logstash:logstash /usr/share/logstash/ && \
     chown -R logstash:root /usr/share/logstash && \
     chmod -R g=u /usr/share/logstash && \
     mkdir /licenses/ && \
     mv /usr/share/logstash/NOTICE.TXT /licenses/NOTICE.TXT && \
     mv /usr/share/logstash/LICENSE.txt /licenses/LICENSE.txt && \
-    find /usr/share/logstash -type d -exec chmod g+s {} \; && \
-    ln -s /usr/share/logstash /opt/logstash
+find /usr/share/logstash -type d -exec chmod g+s {} \; && \
+ln -s /usr/share/logstash /opt/logstash
 
 WORKDIR /usr/share/logstash
 ENV ELASTIC_CONTAINER true
@@ -64,13 +64,13 @@ LABEL  org.label-schema.schema-version="1.0" \
   org.opencontainers.image.vendor="Elastic" \
   org.label-schema.name="logstash" \
   org.opencontainers.image.title="logstash" \
-  org.label-schema.version="8.3.3" \
-  org.opencontainers.image.version="8.3.3" \
+  org.label-schema.version="8.4.0" \
+  org.opencontainers.image.version="8.4.0" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
   org.label-schema.license="Elastic License" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
-  org.label-schema.build-date=2022-07-23T19:31:54Z \
-org.opencontainers.image.created=2022-07-23T19:31:54Z
+  org.label-schema.build-date=2022-08-19T19:24:47Z \
+org.opencontainers.image.created=2022-08-19T19:24:47Z
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
