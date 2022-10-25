@@ -16,7 +16,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-7.17.6-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-7.17.7-linux-$(arch).tar.gz && \
   cd -
 
 
@@ -104,25 +104,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2022-08-22T11:05:33.075Z" \
+LABEL org.label-schema.build-date="2022-10-13T11:08:08.384Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="d2647b053b769d4517fbb14ce37765808a1b6e0c" \
+  org.label-schema.vcs-ref="d60b53b0f972a3e59c06c2cb1bf5818f92d1cb63" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.17.6" \
-  org.opencontainers.image.created="2022-08-22T11:05:33.075Z" \
+  org.label-schema.version="7.17.7" \
+  org.opencontainers.image.created="2022-10-13T11:08:08.384Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="d2647b053b769d4517fbb14ce37765808a1b6e0c" \
+  org.opencontainers.image.revision="d60b53b0f972a3e59c06c2cb1bf5818f92d1cb63" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.17.6"
+  org.opencontainers.image.version="7.17.7"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
