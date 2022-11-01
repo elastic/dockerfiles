@@ -1,0 +1,19 @@
+name: Kibana Docker Image CI
+
+on:
+  push:
+    branches: [ "7.16", "7.17", "8.0", "8.1", "8.2", "8.3", "8.4", "8.5"]
+  pull_request:
+    branches: [ "7.16", "7.17", "8.0", "8.1", "8.2", "8.3", "8.4", "8.5"]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Build the Kibana Docker image
+      run: docker build kibana
