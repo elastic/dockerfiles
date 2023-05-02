@@ -43,7 +43,7 @@ RUN set -eux ; \
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.7.0-linux-$(arch).tar.gz
+RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.7.1-linux-$(arch).tar.gz
 
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1
 
@@ -135,25 +135,25 @@ RUN /etc/ca-certificates/update.d/docker-openjdk
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2023-03-27T16:31:09.816451435Z" \
+LABEL org.label-schema.build-date="2023-04-27T04:33:42.127815583Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="09520b59b6bc1057340b55750186466ea715e30e" \
+  org.label-schema.vcs-ref="f229ed3f893a515d590d0f39b05f68913e2d9b53" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.7.0" \
-  org.opencontainers.image.created="2023-03-27T16:31:09.816451435Z" \
+  org.label-schema.version="8.7.1" \
+  org.opencontainers.image.created="2023-04-27T04:33:42.127815583Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="09520b59b6bc1057340b55750186466ea715e30e" \
+  org.opencontainers.image.revision="f229ed3f893a515d590d0f39b05f68913e2d9b53" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.7.0"
+  org.opencontainers.image.version="8.7.1"
 
 # Our actual entrypoint is `tini`, a minimal but functional init program. It
 # calls the entrypoint we provide, while correctly forwarding signals.
