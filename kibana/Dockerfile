@@ -16,7 +16,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.9.2-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-8.10.1-linux-$(arch).tar.gz && \
   cd -
 
 
@@ -104,25 +104,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2023-08-30T22:08:39.111Z" \
+LABEL org.label-schema.build-date="2023-09-14T23:20:42.888Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="21f3ebd6e951d102f41b0299c35e030c3c9e8eb6" \
+  org.label-schema.vcs-ref="6957ba896ec80fbaeaa269debfdce1478bdde661" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.9.2" \
-  org.opencontainers.image.created="2023-08-30T22:08:39.111Z" \
+  org.label-schema.version="8.10.1" \
+  org.opencontainers.image.created="2023-09-14T23:20:42.888Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="21f3ebd6e951d102f41b0299c35e030c3c9e8eb6" \
+  org.opencontainers.image.revision="6957ba896ec80fbaeaa269debfdce1478bdde661" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.9.2"
+  org.opencontainers.image.version="8.10.1"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
