@@ -1,4 +1,4 @@
-# This Dockerfile was generated from templates/Dockerfile.j2
+# This Dockerfile was generated from templates/Dockerfile.erb
 FROM ubuntu:20.04
 
 RUN for iter in {1..10}; do \
@@ -9,33 +9,35 @@ apt-get install -y procps findutils tar gzip curl && \
 apt-get install -y locales && \
 apt-get clean all && \
 locale-gen 'en_US.UTF-8' && \
-    apt-get clean metadata && \
+apt-get clean metadata && \
 exit_code=0 && break || exit_code=$? && \
-    echo "packaging error: retry $iter in 10s" && \
-    apt-get clean all && \
+echo "packaging error: retry $iter in 10s" && \
+apt-get clean all && \
 apt-get clean metadata && \
 sleep 10; done; \
-    (exit $exit_code)
+(exit $exit_code)
 
 # Provide a non-root user to run the process.
 RUN groupadd --gid 1000 logstash && \
     adduser --uid 1000 --gid 1000 \
-       --home /usr/share/logstash --no-create-home \
-      logstash
+    --home /usr/share/logstash --no-create-home \
+    logstash
+
 
 # Add Logstash itself.
 RUN \
-curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.12.2-linux-$(arch).tar.gz | \
+ curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.13.0-linux-$(arch).tar.gz | \
     tar zxf - -C /usr/share && \
-    mv /usr/share/logstash-8.12.2 /usr/share/logstash && \
-chown --recursive logstash:logstash /usr/share/logstash/ && \
+    mv /usr/share/logstash-8.13.0 /usr/share/logstash && \
+    chown --recursive logstash:logstash /usr/share/logstash/ && \
     chown -R logstash:root /usr/share/logstash && \
     chmod -R g=u /usr/share/logstash && \
     mkdir /licenses/ && \
     mv /usr/share/logstash/NOTICE.TXT /licenses/NOTICE.TXT && \
     mv /usr/share/logstash/LICENSE.txt /licenses/LICENSE.txt && \
-find /usr/share/logstash -type d -exec chmod g+s {} \; && \
-ln -s /usr/share/logstash /opt/logstash
+    find /usr/share/logstash -type d -exec chmod g+s {} \; && \
+    ln -s /usr/share/logstash /opt/logstash
+
 
 WORKDIR /usr/share/logstash
 ENV ELASTIC_CONTAINER true
@@ -54,6 +56,7 @@ ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 COPY env2yaml/env2yaml /usr/local/bin/
 # Place the startup wrapper script.
 COPY bin/docker-entrypoint /usr/local/bin/
+
 RUN chmod 0755 /usr/local/bin/docker-entrypoint
 
 USER 1000
@@ -65,13 +68,15 @@ LABEL  org.label-schema.schema-version="1.0" \
   org.opencontainers.image.vendor="Elastic" \
   org.label-schema.name="logstash" \
   org.opencontainers.image.title="logstash" \
-  org.label-schema.version="8.12.2" \
-  org.opencontainers.image.version="8.12.2" \
+  org.label-schema.version="8.13.0" \
+  org.opencontainers.image.version="8.13.0" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
   org.label-schema.license="Elastic License" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
-  org.label-schema.build-date=2024-02-16T16:21:40+00:00 \
-org.opencontainers.image.created=2024-02-16T16:21:40+00:00
+  org.label-schema.build-date=2024-03-21T09:15:34+00:00 \
+  org.opencontainers.image.created=2024-03-21T09:15:34+00:00
+
+
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
