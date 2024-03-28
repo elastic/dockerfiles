@@ -135,20 +135,20 @@ RUN /etc/ca-certificates/update.d/docker-openjdk
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2024-03-22T03:35:46.757803203Z" \
+LABEL org.label-schema.build-date="2024-02-29T00:05:17.039728241Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="09df99393193b2c53d92899662a8b8b3c55b45cd" \
+  org.label-schema.vcs-ref="e9ca58589babe1dee1661d0c260356b5d5c56e42" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
   org.label-schema.version="8.13.0" \
-  org.opencontainers.image.created="2024-03-22T03:35:46.757803203Z" \
+  org.opencontainers.image.created="2024-02-29T00:05:17.039728241Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="09df99393193b2c53d92899662a8b8b3c55b45cd" \
+  org.opencontainers.image.revision="e9ca58589babe1dee1661d0c260356b5d5c56e42" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
