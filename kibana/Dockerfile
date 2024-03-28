@@ -104,20 +104,20 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2024-02-29T01:06:10.891Z" \
+LABEL org.label-schema.build-date="2024-03-22T04:07:01.866Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="82f46148c91eec93ac7382147936028db2eb8883" \
+  org.label-schema.vcs-ref="2e3a5cd43e835baa1d596b1aa54735992259ecb9" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
   org.label-schema.version="8.13.0" \
-  org.opencontainers.image.created="2024-02-29T01:06:10.891Z" \
+  org.opencontainers.image.created="2024-03-22T04:07:01.866Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="82f46148c91eec93ac7382147936028db2eb8883" \
+  org.opencontainers.image.revision="2e3a5cd43e835baa1d596b1aa54735992259ecb9" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
