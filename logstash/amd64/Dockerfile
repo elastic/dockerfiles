@@ -1,9 +1,5 @@
 # This Dockerfile was generated from templates/Dockerfile.erb
 
-FROM golang:1 as env2yaml
-
-
-
 FROM ubuntu:20.04
 
 RUN for iter in {1..10}; do \
