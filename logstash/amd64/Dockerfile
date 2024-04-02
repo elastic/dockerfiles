@@ -1,6 +1,9 @@
 # This Dockerfile was generated from templates/Dockerfile.erb
 
-                                    
+FROM golang:1 as env2yaml
+
+
+
 FROM ubuntu:20.04
 
 RUN for iter in {1..10}; do \
@@ -51,9 +54,8 @@ COPY pipeline/default.conf pipeline/logstash.conf
 RUN chown --recursive logstash:root config/ pipeline/
 # Ensure Logstash gets the correct locale by default.
 ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
-# Copy over the appropriate env2yaml artifact
-ARG TARGETARCH
-COPY env2yaml/env2yaml-${TARGETARCH} /usr/local/bin/env2yaml
+# Copy over the env2yaml artifact
+COPY env2yaml /usr/local/bin/env2yaml
 # Place the startup wrapper script.
 COPY bin/docker-entrypoint /usr/local/bin/
 
