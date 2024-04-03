@@ -48,12 +48,24 @@ COPY config/pipelines.yml config/pipelines.yml
 COPY config/log4j2.properties config/
 COPY config/log4j2.file.properties config/
 COPY pipeline/default.conf pipeline/logstash.conf
+COPY env2yaml/env2yaml-amd64 env2yaml/
+COPY env2yaml/env2yaml-arm64 env2yaml/
 RUN chown --recursive logstash:root config/ pipeline/
 # Ensure Logstash gets the correct locale by default.
 ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 # Copy over the appropriate env2yaml artifact
-ARG TARGETARCH
-COPY env2yaml/env2yaml-${TARGETARCH} /usr/local/bin/env2yaml
+RUN env2yamlarch="$(arch)"; \
+  case "${env2yamlarch}" in \
+    'x86_64') \
+      env2yamlarch=amd64; \
+      ;; \
+    'aarch64') \
+      env2yamlarch=arm64; \
+      ;; \
+    *) echo >&2 "error: unsupported architecture '${env2yamlarch}'"; exit 1 ;; \
+  esac; \
+  cp env2yaml/env2yaml-${env2yamlarch} /usr/local/bin/env2yaml; \
+  rm -rf env2yaml
 # Place the startup wrapper script.
 COPY bin/docker-entrypoint /usr/local/bin/
 
@@ -76,7 +88,7 @@ LABEL  org.label-schema.schema-version="1.0" \
   org.label-schema.license="Elastic License" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
-  org.label-schema.build-date=2024-03-28T21:30:18+00:00 \
-  org.opencontainers.image.created=2024-03-28T21:30:18+00:00
+  org.label-schema.build-date=2024-04-03T10:39:38-04:00 \
+  org.opencontainers.image.created=2024-04-03T10:39:38-04:00
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
