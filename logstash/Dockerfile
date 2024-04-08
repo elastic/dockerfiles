@@ -25,9 +25,9 @@ RUN groupadd --gid 1000 logstash && \
   adduser --uid 1000 --gid 1000 --home /usr/share/logstash --no-create-home logstash
 
 # Add Logstash itself.
-RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.13.1-linux-$(arch).tar.gz | \
+RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.13.2-linux-$(arch).tar.gz | \
   tar zxf - -C /usr/share && \
-  mv /usr/share/logstash-8.13.1 /usr/share/logstash && \
+  mv /usr/share/logstash-8.13.2 /usr/share/logstash && \
   chown --recursive logstash:logstash /usr/share/logstash/ && \
   chown -R logstash:root /usr/share/logstash && \
   chmod -R g=u /usr/share/logstash && \
@@ -50,9 +50,11 @@ COPY config/log4j2.file.properties config/
 COPY pipeline/default.conf pipeline/logstash.conf
 COPY env2yaml/env2yaml-amd64 env2yaml/
 COPY env2yaml/env2yaml-arm64 env2yaml/
+
 RUN chown --recursive logstash:root config/ pipeline/
 # Ensure Logstash gets the correct locale by default.
 ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+
 # Copy over the appropriate env2yaml artifact
 RUN env2yamlarch="$(arch)"; \
   case "${env2yamlarch}" in \
@@ -62,7 +64,7 @@ RUN env2yamlarch="$(arch)"; \
     'aarch64') \
       env2yamlarch=arm64; \
       ;; \
-    *) echo >&2 "error: unsupported architecture '${env2yamlarch}'"; exit 1 ;; \
+    *) echo >&2 "error: unsupported architecture '$env2yamlarch'"; exit 1 ;; \
   esac; \
   cp env2yaml/env2yaml-${env2yamlarch} /usr/local/bin/env2yaml; \
   rm -rf env2yaml
@@ -81,14 +83,14 @@ LABEL  org.label-schema.schema-version="1.0" \
   org.opencontainers.image.vendor="Elastic" \
   org.label-schema.name="logstash" \
   org.opencontainers.image.title="logstash" \
-  org.label-schema.version="8.13.1" \
-  org.opencontainers.image.version="8.13.1" \
+  org.label-schema.version="8.13.2" \
+  org.opencontainers.image.version="8.13.2" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
   org.label-schema.license="Elastic License" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
-  org.label-schema.build-date=2024-04-03T10:39:38-04:00 \
-  org.opencontainers.image.created=2024-04-03T10:39:38-04:00
+  org.label-schema.build-date=2024-04-05T16:26:47+00:00 \
+  org.opencontainers.image.created=2024-04-05T16:26:47+00:00
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
