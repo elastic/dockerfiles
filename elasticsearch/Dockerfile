@@ -5,9 +5,10 @@
 ################################################################################
 
 ################################################################################
-# Build stage 0 `builder`:
+# Build stage 1 `builder`:
 # Extract Elasticsearch artifact
 ################################################################################
+
 FROM ubuntu:20.04 AS builder
 
 # Install required packages to extract the Elasticsearch distribution
@@ -42,7 +43,7 @@ RUN set -eux ; \
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-7.17.20-linux-$(arch).tar.gz
+RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.13.3-linux-$(arch).tar.gz
 
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1
 
@@ -71,9 +72,9 @@ RUN sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elas
     find config -type f -exec chmod 0664 {} +
 
 ################################################################################
-# Build stage 1 (the actual Elasticsearch image):
+# Build stage 2 (the actual Elasticsearch image):
 #
-# Copy elasticsearch from stage 0
+# Copy elasticsearch from stage 1
 # Add entrypoint
 ################################################################################
 
@@ -86,7 +87,7 @@ RUN yes no | dpkg-reconfigure dash && \
       apt-get update && \
       apt-get upgrade -y && \
       apt-get install -y --no-install-recommends \
-        ca-certificates curl netcat p11-kit unzip zip && \
+        ca-certificates curl netcat p11-kit unzip zip  && \
       apt-get clean && \
       rm -rf /var/lib/apt/lists/* && \
       exit_code=0 && break || \
@@ -134,31 +135,33 @@ RUN /etc/ca-certificates/update.d/docker-openjdk
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2024-04-08T08:34:31.070382898Z" \
+LABEL org.label-schema.build-date="2024-04-29T22:05:16.051731935Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="b26557f585b7d95c71a5549e571a6bcd2667697d" \
+  org.label-schema.vcs-ref="617f7b76c4ebcb5a7f1e70d409a99c437c896aea" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.17.20" \
-  org.opencontainers.image.created="2024-04-08T08:34:31.070382898Z" \
+  org.label-schema.version="8.13.3" \
+  org.opencontainers.image.created="2024-04-29T22:05:16.051731935Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="b26557f585b7d95c71a5549e571a6bcd2667697d" \
+  org.opencontainers.image.revision="617f7b76c4ebcb5a7f1e70d409a99c437c896aea" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.17.20"
+  org.opencontainers.image.version="8.13.3"
 
 # Our actual entrypoint is `tini`, a minimal but functional init program. It
 # calls the entrypoint we provide, while correctly forwarding signals.
 ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
 # Dummy overridable parameter parsed by entrypoint
 CMD ["eswrapper"]
+
+USER 1000:0
 
 ################################################################################
 # End of multi-stage Dockerfile
