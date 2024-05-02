@@ -16,7 +16,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.13.3-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-7.17.21-linux-$(arch).tar.gz && \
   cd -
 
 
@@ -104,25 +104,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2024-04-30T02:06:44.402Z" \
+LABEL org.label-schema.build-date="2024-04-25T11:06:50.254Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="003e4a42946390c2eb93dfb3586498ce7520a530" \
+  org.label-schema.vcs-ref="34995fdf7c8c448c6fc99cd0a5e50c88479ff59f" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.13.3" \
-  org.opencontainers.image.created="2024-04-30T02:06:44.402Z" \
+  org.label-schema.version="7.17.21" \
+  org.opencontainers.image.created="2024-04-25T11:06:50.254Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="003e4a42946390c2eb93dfb3586498ce7520a530" \
+  org.opencontainers.image.revision="34995fdf7c8c448c6fc99cd0a5e50c88479ff59f" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.13.3"
+  org.opencontainers.image.version="7.17.21"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
@@ -131,4 +131,4 @@ ENTRYPOINT ["/bin/tini", "--"]
 CMD ["/usr/local/bin/kibana-docker"]
 
 
-USER 1000
+USER kibana
