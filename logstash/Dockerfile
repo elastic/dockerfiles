@@ -56,12 +56,12 @@ RUN chown --recursive logstash:root config/ pipeline/
 ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
 # Copy over the appropriate env2yaml artifact
-RUN env2yamlarch="$(arch)"; \
+RUN env2yamlarch="$(dpkg --print-architecture)"; \
   case "${env2yamlarch}" in \
-    'x86_64') \
+    'x86_64'|'amd64') \
       env2yamlarch=amd64; \
       ;; \
-    'aarch64') \
+    'aarch64'|'arm64') \
       env2yamlarch=arm64; \
       ;; \
     *) echo >&2 "error: unsupported architecture '$env2yamlarch'"; exit 1 ;; \
