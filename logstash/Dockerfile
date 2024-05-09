@@ -1,6 +1,6 @@
 # This Dockerfile was generated from templates/Dockerfile.erb
 
-                                    
+                                        
 FROM ubuntu:20.04
 
 RUN for iter in {1..10}; do \
@@ -25,9 +25,9 @@ RUN groupadd --gid 1000 logstash && \
   adduser --uid 1000 --gid 1000 --home /usr/share/logstash --no-create-home logstash
 
 # Add Logstash itself.
-RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.13.3-linux-$(arch).tar.gz | \
+RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.13.4-linux-$(arch).tar.gz | \
   tar zxf - -C /usr/share && \
-  mv /usr/share/logstash-8.13.3 /usr/share/logstash && \
+  mv /usr/share/logstash-8.13.4 /usr/share/logstash && \
   chown --recursive logstash:logstash /usr/share/logstash/ && \
   chown -R logstash:root /usr/share/logstash && \
   chmod -R g=u /usr/share/logstash && \
@@ -43,13 +43,10 @@ ENV PATH=/usr/share/logstash/bin:$PATH
 
 # Provide a minimal configuration, so that simple invocations will provide
 # a good experience.
-COPY config/pipelines.yml config/pipelines.yml
   COPY config/logstash-full.yml config/logstash.yml
-COPY config/log4j2.properties config/
-COPY config/log4j2.file.properties config/
+COPY config/pipelines.yml config/log4j2.properties config/log4j2.file.properties config/
 COPY pipeline/default.conf pipeline/logstash.conf
-COPY env2yaml/env2yaml-amd64 env2yaml/
-COPY env2yaml/env2yaml-arm64 env2yaml/
+COPY env2yaml/env2yaml-amd64 env2yaml/env2yaml-arm64 env2yaml/
 
 RUN chown --recursive logstash:root config/ pipeline/
 # Ensure Logstash gets the correct locale by default.
@@ -83,14 +80,14 @@ LABEL  org.label-schema.schema-version="1.0" \
   org.opencontainers.image.vendor="Elastic" \
   org.label-schema.name="logstash" \
   org.opencontainers.image.title="logstash" \
-  org.label-schema.version="8.13.3" \
-  org.opencontainers.image.version="8.13.3" \
+  org.label-schema.version="8.13.4" \
+  org.opencontainers.image.version="8.13.4" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
   org.label-schema.license="Elastic License" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
-  org.label-schema.build-date=2024-04-25T21:23:18+00:00 \
-  org.opencontainers.image.created=2024-04-25T21:23:18+00:00
+  org.label-schema.build-date=2024-05-06T13:27:14+00:00 \
+  org.opencontainers.image.created=2024-05-06T13:27:14+00:00
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
