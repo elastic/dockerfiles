@@ -78,4 +78,4 @@ and includes the full set of [free
 features](https://www.elastic.co/subscriptions).
 
 View the detailed release notes
-[here](https://www.elastic.co/guide/en/elasticsearch/reference/REL_1326_Testing/es-release-notes.html).
+[here](https://www.elastic.co/guide/en/elasticsearch/reference/8.13/es-release-notes.html).

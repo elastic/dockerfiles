@@ -16,19 +16,40 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.15.2-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-8.13.4-linux-$(arch).tar.gz && \
   cd -
+
 
 RUN mkdir /usr/share/kibana
 WORKDIR /usr/share/kibana
-RUN tar \
-  --strip-components=1 \
-  -zxf /tmp/kibana.tar.gz
+RUN tar --strip-components=1 -zxf /tmp/kibana.tar.gz
 # Ensure that group permissions are the same as user permissions.
 # This will help when relying on GID-0 to run Kibana, rather than UID-1000.
 # OpenShift does this, for example.
 # REF: https://docs.openshift.org/latest/creating_images/guidelines.html
 RUN chmod -R g=u /usr/share/kibana
+
+
+################################################################################
+# Build stage 1 (the actual Kibana image):
+#
+# Copy kibana from stage 0
+# Add entrypoint
+################################################################################
+FROM ubuntu:20.04
+EXPOSE 5601
+
+RUN for iter in {1..10}; do \
+      export DEBIAN_FRONTEND=noninteractive && \
+      apt-get update  && \
+      apt-get upgrade -y  && \
+      apt-get install -y --no-install-recommends \
+       fontconfig fonts-liberation libnss3 libfontconfig1 ca-certificates curl && \
+      apt-get clean && \
+      rm -rf /var/lib/apt/lists/* && exit_code=0 && break || exit_code=$? && echo "apt-get error: retry $iter in 10s" && \
+      sleep 10; \
+    done; \
+    (exit $exit_code)
 
 # Add an init process, check the checksum to make sure it's a match
 RUN set -e ; \
@@ -49,38 +70,14 @@ RUN set -e ; \
   rm "${TINI_BIN}.sha256sum" ; \
   mv "${TINI_BIN}" /bin/tini ; \
   chmod +x /bin/tini
-RUN mkdir -p /usr/share/fonts/local && \
-  curl --retry 8 -S -L -o /usr/share/fonts/local/NotoSansCJK-Regular.ttc https://github.com/googlefonts/noto-cjk/raw/NotoSansV2.001/NotoSansCJK-Regular.ttc && \
-  echo "5dcd1c336cc9344cb77c03a0cd8982ca8a7dc97d620fd6c9c434e02dcb1ceeb3  /usr/share/fonts/local/NotoSansCJK-Regular.ttc" | sha256sum -c -
 
-
-################################################################################
-# Build stage 1 (the actual Kibana image):
-#
-# Copy kibana from stage 0
-# Add entrypoint
-################################################################################
-FROM ubuntu:20.04
-EXPOSE 5601
-
-RUN for iter in {1..10}; do \
-      export DEBIAN_FRONTEND=noninteractive && \
-      apt-get update  && \
-      apt-get upgrade -y  && \
-      apt-get install -y --no-install-recommends \
-       fontconfig libnss3 curl ca-certificates && \
-      apt-get clean && \
-      rm -rf /var/lib/apt/lists/* && exit_code=0 && break || exit_code=$? && echo "apt-get error: retry $iter in 10s" && \
-      sleep 10; \
-    done; \
-    (exit $exit_code)
+RUN mkdir /usr/share/fonts/local
+RUN curl --retry 8 -S -L -o /usr/share/fonts/local/NotoSansCJK-Regular.ttc https://github.com/googlefonts/noto-cjk/raw/NotoSansV2.001/NotoSansCJK-Regular.ttc
+RUN echo "5dcd1c336cc9344cb77c03a0cd8982ca8a7dc97d620fd6c9c434e02dcb1ceeb3  /usr/share/fonts/local/NotoSansCJK-Regular.ttc" | sha256sum -c -
+RUN fc-cache -v
 
 # Bring in Kibana from the initial stage.
 COPY --from=builder --chown=1000:0 /usr/share/kibana /usr/share/kibana
-COPY --from=builder --chown=0:0 /bin/tini /bin/tini
-# Load reporting fonts
-COPY --from=builder --chown=0:0 /usr/share/fonts/local/NotoSansCJK-Regular.ttc /usr/share/fonts/local/NotoSansCJK-Regular.ttc
-RUN fc-cache -v
 WORKDIR /usr/share/kibana
 RUN ln -s /usr/share/kibana /opt/kibana
 
@@ -107,25 +104,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2024-09-19T11:10:25.889Z" \
+LABEL org.label-schema.build-date="2024-05-07T06:06:37.059Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="5a522bfe14bc6d06c20bc337477fd53f7c538973" \
+  org.label-schema.vcs-ref="f5dc24d1969f80e4aa3ced7cc375dd00554f8c0c" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.15.2" \
-  org.opencontainers.image.created="2024-09-19T11:10:25.889Z" \
+  org.label-schema.version="8.13.4" \
+  org.opencontainers.image.created="2024-05-07T06:06:37.059Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="5a522bfe14bc6d06c20bc337477fd53f7c538973" \
+  org.opencontainers.image.revision="f5dc24d1969f80e4aa3ced7cc375dd00554f8c0c" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.15.2"
+  org.opencontainers.image.version="8.13.4"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
