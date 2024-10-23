@@ -9,7 +9,7 @@ jobs:
       runs-on: ubuntu-latest
       if: |
         startsWith(github.event.pull_request.head.ref, 'docker_files_push') &&
-        github.event.pull_request.user.login == 'vault-plugin-secrets-github'
+        github.event.pull_request.user.login == 'elasticmachine'
       permissions:
         pull-requests: write
       steps:
