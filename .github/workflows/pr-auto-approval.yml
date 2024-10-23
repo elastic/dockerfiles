@@ -1,0 +1,16 @@
+on:
+    pull_request_target:
+      branches-ignore:
+        - 8.13
+
+jobs:
+    approve:
+      name: Auto-approve docker push pr
+      runs-on: ubuntu-latest
+      if: |
+        startsWith(github.event.pull_request.head.ref, 'docker_files_push') &&
+        github.event.pull_request.user.login == 'vault-plugin-secrets-github'
+      permissions:
+        pull-requests: write
+      steps:
+        - uses: hmarr/auto-approve-action@v3
