@@ -7,8 +7,7 @@ jobs:
       name: Auto-approve docker push pr
       runs-on: ubuntu-latest
       if: |
-        startsWith(github.event.pull_request.head.ref, 'docker_files_push') &&
-        github.event.pull_request.user.login == 'elasticmachine'
+        startsWith(github.event.pull_request.head.ref, 'docker_files_push')
       permissions:
         pull-requests: write
       steps:
