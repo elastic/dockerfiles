@@ -3,6 +3,14 @@ on:
       branches:
         - test_branch
 jobs:
+    debug:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Events data
+          env:
+            EVENT_DATA: ${{ toJson(github.event) }}
+          run: echo "$EVENT_DATA"
+
     approve:
       name: Auto-approve docker push pr
       runs-on: ubuntu-latest
