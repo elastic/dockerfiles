@@ -10,13 +10,12 @@ jobs:
           env:
             EVENT_DATA: ${{ toJson(github.event) }}
           run: echo "$EVENT_DATA"
-
     approve:
       name: Auto-approve docker push pr
       runs-on: ubuntu-latest
       if: |
         startsWith(github.event.pull_request.head.ref, 'docker_files_push') &&
-        github.event.pull_request.user.login == 'elasticmachine'
+        github.event.pull_request.user.login == 'elastic-vault-github-plugin-prod'
       permissions:
         pull-requests: write
       steps:
