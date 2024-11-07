@@ -1,0 +1,22 @@
+name: Auto-Approve Dockerfiles PR
+
+on:
+  pull_request_target:
+    branches:
+      - '*'
+
+jobs:
+  auto-approve-and-merge:
+    name: Auto-Approve and Merge
+    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.user.login == 'elasticmachine'
+    permissions:
+      pull-requests: write
+      contents: write
+
+    steps:
+      - name: Auto Approve
+        uses: hmarr/auto-approve-action@v3
+        with:
+          github_token: ${{secrets.ELASTICMACHINE_TOKEN}}
