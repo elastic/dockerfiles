@@ -1,22 +1,19 @@
 on:
     pull_request_target:
       branches:
-        - test_branch
+        - '*'
 jobs:
-    debug:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Events data
-          env:
-            EVENT_DATA: ${{ toJson(github.event) }}
-          run: echo "$EVENT_DATA"
     approve:
       name: Auto-approve docker push pr
       runs-on: ubuntu-latest
       if: |
         startsWith(github.event.pull_request.head.ref, 'docker_files_push') &&
-        github.event.pull_request.user.login == 'elastic-vault-github-plugin-prod'
+        github.event.pull_request.user.login == 'elasticmachine'
       permissions:
         pull-requests: write
+        contents: write
       steps:
-        - uses: hmarr/auto-approve-action@v3
+        - name: Auto Approve
+          uses: hmarr/auto-approve-action@v3
+          with:
+            github_token: ${{secrets.ELASTICMACHINE_TOKEN}}
