@@ -20,7 +20,7 @@ jobs:
           echo "PR Head Ref: ${{ github.event.pull_request.head.ref }}"
           echo "PR User Login: ${{ github.event.pull_request.user.login }}"
 
-        - name: Auto Approve
-          uses: hmarr/auto-approve-action@v3
-          with:
-            github_token: ${{secrets.ELASTICMACHINE_TOKEN}}
+      - name: Auto Approve
+        uses: hmarr/auto-approve-action@v3
+        with:
+          github_token: ${{secrets.ELASTICMACHINE_TOKEN}}
