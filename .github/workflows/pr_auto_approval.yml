@@ -1,9 +1,10 @@
-name: Auto-Approve Docker Push PR
-
 on:
-    pull_request_target:
+    pull_request:
+      types:
+        - opened
       branches:
         - '*'
+
 jobs:
     approve:
       name: Auto-approve docker push pr
