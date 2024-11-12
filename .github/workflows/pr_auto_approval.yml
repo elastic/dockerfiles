@@ -1,14 +1,13 @@
 on:
   pull_request_target:
     branches:
-      - 6.13
+      - 8.13
 jobs:
   approve:
     name: Auto-approve docker push pr
     runs-on: ubuntu-latest
     if: |
-      startsWith(github.event.pull_request.head.ref, 'docker_files_push') &&
-      github.event.pull_request.user.login == 'elasticmachine'
+      startsWith(github.event.pull_request.head.ref, 'docker_files_push')
 
     permissions:
       pull-requests: write
