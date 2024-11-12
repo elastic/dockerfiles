@@ -1,22 +1,16 @@
 on:
-    pull_request:
-      types:
-        - opened
-      branches:
-        - '*'
+  pull_request_target:
+    branches-ignore:
+      - 8.13
 
 jobs:
-    approve:
-      name: Auto-approve docker push pr
-      runs-on: ubuntu-latest
-      if: |
-        startsWith(github.event.pull_request.head.ref, 'docker_files_push_')
-      permissions:
-        pull-requests: write
-        contents: write
+  approve:
+    name: Auto-approve docker push pr
+    runs-on: ubuntu-latest
+    if: |
+      startsWith(github.event.pull_request.head.ref, 'docker_files_push')
 
-      steps:
-      - name: Debug PR info
-        run: |
-          echo "PR Head Ref: ${{ github.event.pull_request.head.ref }}"
+    permissions:
+      pull-requests: write
+    steps:
       - uses: hmarr/auto-approve-action@v3
