@@ -11,7 +11,7 @@ jobs:
       runs-on: ubuntu-latest
       if: |
         startsWith(github.event.pull_request.head.ref, 'docker_files_push_') &&
-        github.event.pull_request.user.login == 'elasticmachine'
+        github.event.pull_request.user.login == 'elastic-vault-github-plugin-prod[bot]'
       permissions:
         pull-requests: write
         contents: write
