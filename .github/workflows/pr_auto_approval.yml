@@ -1,0 +1,25 @@
+on:
+    pull_request:
+      types:
+        - opened
+      branches:
+        - '*'
+
+jobs:
+    approve:
+      name: Auto-approve docker push pr
+      runs-on: ubuntu-latest
+      if: |
+        startsWith(github.event.pull_request.head.ref, 'docker_files_push_') &&
+        github.event.pull_request.user.login == 'elastic-vault-github-plugin-prod[bot]'
+      permissions:
+        pull-requests: write
+        contents: write
+
+      steps:
+      - name: Debug PR info
+        run: |
+          echo "PR Head Ref: ${{ github.event.pull_request.head.ref }}"
+          echo "PR User Login: ${{ github.event.pull_request.user.login }}"
+      - name: Auto Approve
+        uses: hmarr/auto-approve-action@v3
