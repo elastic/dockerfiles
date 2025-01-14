@@ -16,7 +16,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-7.17.26-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-7.17.27-linux-$(arch).tar.gz && \
   cd -
 
 
@@ -104,25 +104,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2024-11-26T12:11:54.291Z" \
+LABEL org.label-schema.build-date="2025-01-09T12:11:26.690Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="2ed05e4a85cb41a24646b02ee9c1b6ab2b0e9cde" \
+  org.label-schema.vcs-ref="828e49db669c29d8cc4f3a30f6abe5e8f69a4290" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="7.17.26" \
-  org.opencontainers.image.created="2024-11-26T12:11:54.291Z" \
+  org.label-schema.version="7.17.27" \
+  org.opencontainers.image.created="2025-01-09T12:11:26.690Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="2ed05e4a85cb41a24646b02ee9c1b6ab2b0e9cde" \
+  org.opencontainers.image.revision="828e49db669c29d8cc4f3a30f6abe5e8f69a4290" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="7.17.26"
+  org.opencontainers.image.version="7.17.27"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
