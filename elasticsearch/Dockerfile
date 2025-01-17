@@ -46,7 +46,7 @@ WORKDIR /usr/share/elasticsearch
 
 RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.17.0-linux-$(arch).tar.gz
 
-RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1
+ADD /tmp/elasticsearch.tar.gz /usr/share/elasticsearch
 
 # The distribution includes a `config` directory, no need to create it
 COPY config/elasticsearch.yml config/
