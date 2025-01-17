@@ -44,8 +44,8 @@ RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /usr/share/elasticsearch/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.17.0-linux-$(arch).tar.gz
-ADD ./elasticsearch.tar.gz .
+RUN curl --retry 10 -S -L --output /etc/.ci-agent/workspace/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.17.0-linux-$(arch).tar.gz
+ADD /etc/.ci-agent/workspace/elasticsearch.tar.gz /usr/share/elasticsearch
 
 # The distribution includes a `config` directory, no need to create it
 COPY config/elasticsearch.yml config/
