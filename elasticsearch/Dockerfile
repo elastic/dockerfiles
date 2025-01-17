@@ -45,7 +45,7 @@ RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
 RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.17.0-linux-$(arch).tar.gz
-
+RUN pwd
 RUN ls -ltr /*/*
 # ADD /tmp/elasticsearch.tar.gz /usr/share/elasticsearch
 
