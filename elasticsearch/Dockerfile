@@ -46,7 +46,7 @@ WORKDIR /usr/share/elasticsearch
 
 RUN curl --retry 10 -S -L --output elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.17.0-linux-$(arch).tar.gz
 RUN pwd
-RUN ls -ltr ./*/*
+RUN ls -ltr ./**/*
 RUN RUN ls -ltr /etc/.ci-agent/workspace/*/*
 
 # ADD elasticsearch.tar.gz /usr/share/elasticsearch
