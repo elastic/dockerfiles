@@ -3,7 +3,7 @@ FROM docker.elastic.co/elasticsearch/elasticsearch:8.9.0
 
 # Set environment variables for Elasticsearch configuration
 ENV discovery.type=single-node \
-    ES_JAVA_OPTS="-Xms1024m -Xmx1024m"  # Set JVM heap size
+    ES_JAVA_OPTS="-Xms1024m -Xmx1024m"
 
 # Set the working directory
 WORKDIR /usr/share/elasticsearch
