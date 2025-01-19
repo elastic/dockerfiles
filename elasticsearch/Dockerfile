@@ -1,82 +1,54 @@
-# Use the official Elasticsearch image
-FROM docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+################################################################################
+# This Dockerfile was generated from the template at distribution/src/docker/Dockerfile
+#
+# Beginning of multi stage Dockerfile
+################################################################################
 
-# Set environment variables for Elasticsearch configuration
-ENV discovery.type=single-node \
-    ES_JAVA_OPTS="-Xms1024m -Xmx1024m"
+################################################################################
+# Build stage 1 `builder`:
+# Extract Elasticsearch artifact
+################################################################################
 
-# Set the working directory
+FROM ubuntu:20.04 AS builder
+
+# Install required packages to extract the Elasticsearch distribution
+
+RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
+      apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl  && \
+      exit_code=0 && break || \
+        exit_code=$? && echo "apt-get error: retry $iter in 10s" && sleep 10; \
+    done; \
+    exit $exit_code
+
+    # `tini` is a tiny but valid init for containers. This is used to cleanly
+    # control how ES and any child processes are shut down.
+    # For wolfi we pick it from the blessed wolfi package registry.
+    #
+    # The tini GitHub page gives instructions for verifying the binary using
+    # gpg, but the keyservers are slow to return the key and this can fail the
+    # build. Instead, we check the binary against the published checksum.
+    RUN set -eux ; \
+        tini_bin="" ; \
+        case "$(arch)" in \
+            aarch64) tini_bin='tini-arm64' ;; \
+            x86_64)  tini_bin='tini-amd64' ;; \
+            *) echo >&2 ; echo >&2 "Unsupported architecture $(arch)" ; echo >&2 ; exit 1 ;; \
+        esac ; \
+        curl --retry 10 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin} ; \
+        curl --retry 10 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin}.sha256sum ; \
+        sha256sum -c ${tini_bin}.sha256sum ; \
+        rm ${tini_bin}.sha256sum ; \
+        mv ${tini_bin} /bin/tini ; \
+        chmod 0555 /bin/tini
+
+RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-# Expose the default Elasticsearch ports
-EXPOSE 9200 9300
+RUN curl --retry 10 -S -L --output elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.17.0-linux-$(arch).tar.gz
+RUN pwd
+RUN ls -ltr ./*/*
+RUN RUN ls -ltr /etc/.ci-agent/workspace/*/*
 
-# Copy custom configuration files (if needed)
-# Uncomment the line below if you have a custom configuration file
-COPY config/elasticsearch.yml config/elasticsearch.yml
-
-# Install plugins (if needed)
-# Uncomment the lines below to install specific plugins
-# RUN bin/elasticsearch-plugin install analysis-icu
-# RUN bin/elasticsearch-plugin install analysis-phonetic
-
-# Set permissions (Elasticsearch requires certain permissions)
-RUN chmod -R 0775 /usr/share/elasticsearch && \
-    chown -R elasticsearch:elasticsearch /usr/share/elasticsearch
-
-# Run Elasticsearch as the default command
-CMD ["bin/elasticsearch"]
-
-
-
-
-# ################################################################################
-# # This Dockerfile was generated from the template at distribution/src/docker/Dockerfile
-# #
-# # Beginning of multi stage Dockerfile
-# ################################################################################
-
-# ################################################################################
-# # Build stage 1 `builder`:
-# # Extract Elasticsearch artifact
-# ################################################################################
-
-# FROM ubuntu:20.04 AS builder
-
-# # Install required packages to extract the Elasticsearch distribution
-
-# RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
-#       apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl  && \
-#       exit_code=0 && break || \
-#         exit_code=$? && echo "apt-get error: retry $iter in 10s" && sleep 10; \
-#     done; \
-#     exit $exit_code
-
-#     # `tini` is a tiny but valid init for containers. This is used to cleanly
-#     # control how ES and any child processes are shut down.
-#     # For wolfi we pick it from the blessed wolfi package registry.
-#     #
-#     # The tini GitHub page gives instructions for verifying the binary using
-#     # gpg, but the keyservers are slow to return the key and this can fail the
-#     # build. Instead, we check the binary against the published checksum.
-#     RUN set -eux ; \
-#         tini_bin="" ; \
-#         case "$(arch)" in \
-#             aarch64) tini_bin='tini-arm64' ;; \
-#             x86_64)  tini_bin='tini-amd64' ;; \
-#             *) echo >&2 ; echo >&2 "Unsupported architecture $(arch)" ; echo >&2 ; exit 1 ;; \
-#         esac ; \
-#         curl --retry 10 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin} ; \
-#         curl --retry 10 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin}.sha256sum ; \
-#         sha256sum -c ${tini_bin}.sha256sum ; \
-#         rm ${tini_bin}.sha256sum ; \
-#         mv ${tini_bin} /bin/tini ; \
-#         chmod 0555 /bin/tini
-
-# RUN mkdir /usr/share/elasticsearch
-# WORKDIR /usr/share/elasticsearch
-
-# RUN curl --retry 10 -S -L --output elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.17.0-linux-$(arch).tar.gz
 # ADD elasticsearch.tar.gz /usr/share/elasticsearch
 
 # # The distribution includes a `config` directory, no need to create it
