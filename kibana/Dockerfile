@@ -16,7 +16,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.17.0-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-9.0.0-beta1-linux-$(arch).tar.gz && \
   cd -
 
 RUN mkdir /usr/share/kibana
@@ -69,7 +69,7 @@ RUN for iter in {1..10}; do \
       apt-get update  && \
       apt-get upgrade -y  && \
       apt-get install -y --no-install-recommends \
-       fontconfig libnss3 curl ca-certificates && \
+      fontconfig fonts-liberation libnss3 curl ca-certificates && \
       apt-get clean && \
       rm -rf /var/lib/apt/lists/* && exit_code=0 && break || exit_code=$? && echo "apt-get error: retry $iter in 10s" && \
       sleep 10; \
@@ -108,25 +108,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2024-12-11T11:12:31.173Z" \
+LABEL org.label-schema.build-date="2025-02-11T12:13:37.896Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="86cbc85e621f4f3f701ed230f4e859ac5a80145b" \
+  org.label-schema.vcs-ref="a9ae718019d3909912f81e5d388ef597929071a1" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.17.0" \
-  org.opencontainers.image.created="2024-12-11T11:12:31.173Z" \
+  org.label-schema.version="9.0.0-beta1" \
+  org.opencontainers.image.created="2025-02-11T12:13:37.896Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="86cbc85e621f4f3f701ed230f4e859ac5a80145b" \
+  org.opencontainers.image.revision="a9ae718019d3909912f81e5d388ef597929071a1" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.17.0"
+  org.opencontainers.image.version="9.0.0-beta1"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
