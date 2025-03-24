@@ -9,14 +9,14 @@
 # Build stage 0 `builder`:
 # Extract Kibana artifact
 ################################################################################
-FROM ubuntu:20.04 AS builder
+FROM docker.elastic.co/ubi9/ubi-minimal:latest AS builder
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
+RUN microdnf install -y findutils tar gzip
 
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-9.0.0-beta1-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-9.0.0-rc1-linux-$(arch).tar.gz && \
   cd -
 
 RUN mkdir /usr/share/kibana
@@ -61,17 +61,14 @@ RUN mkdir -p /usr/share/fonts/local && \
 # Copy kibana from stage 0
 # Add entrypoint
 ################################################################################
-FROM ubuntu:20.04
+FROM docker.elastic.co/ubi9/ubi-minimal:latest
 EXPOSE 5601
 
 RUN for iter in {1..10}; do \
-      export DEBIAN_FRONTEND=noninteractive && \
-      apt-get update  && \
-      apt-get upgrade -y  && \
-      apt-get install -y --no-install-recommends \
-      fontconfig fonts-liberation libnss3 curl ca-certificates && \
-      apt-get clean && \
-      rm -rf /var/lib/apt/lists/* && exit_code=0 && break || exit_code=$? && echo "apt-get error: retry $iter in 10s" && \
+      microdnf update --setopt=tsflags=nodocs -y && \
+      microdnf install --setopt=tsflags=nodocs -y \
+      fontconfig liberation-fonts-common freetype shadow-utils nss findutils && \
+      microdnf clean all && exit_code=0 && break || exit_code=$? && echo "microdnf error: retry $iter in 10s" && \
       sleep 10; \
     done; \
     (exit $exit_code)
@@ -108,26 +105,36 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2025-02-11T12:13:37.896Z" \
+LABEL org.label-schema.build-date="2025-03-19T12:31:41.621Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="a9ae718019d3909912f81e5d388ef597929071a1" \
+  org.label-schema.vcs-ref="d6960388820701573f4a79825ae057ff62e37d83" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="9.0.0-beta1" \
-  org.opencontainers.image.created="2025-02-11T12:13:37.896Z" \
+  org.label-schema.version="9.0.0-rc1" \
+  org.opencontainers.image.created="2025-03-19T12:31:41.621Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="a9ae718019d3909912f81e5d388ef597929071a1" \
+  org.opencontainers.image.revision="d6960388820701573f4a79825ae057ff62e37d83" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="9.0.0-beta1"
+  org.opencontainers.image.version="9.0.0-rc1"
 
+LABEL name="Kibana" \
+  maintainer="infra@elastic.co" \
+  vendor="Elastic" \
+  version="9.0.0-rc1" \
+  release="1" \
+  summary="Kibana" \
+  description="Your window into the Elastic Stack."
+
+RUN mkdir /licenses && \
+    cp LICENSE.txt /licenses/LICENSE
 
 ENTRYPOINT ["/bin/tini", "--"]
 
