@@ -13,7 +13,7 @@ RUN go build
 
 # Build main image
 # Minimal distributions do not ship with en language packs.
-FROM docker.elastic.co/ubi8/ubi-minimal
+FROM docker.elastic.co/ubi9/ubi-minimal
 
 ENV ELASTIC_CONTAINER true
 ENV PATH=/usr/share/logstash/bin:$PATH
@@ -34,7 +34,6 @@ RUN for iter in {1..10}; do \
   microdnf install -y procps findutils tar gzip && \
   microdnf install -y openssl && \
   microdnf install -y which shadow-utils && \
-  microdnf install -y curl && \
   microdnf clean all && \
   exit_code=0 && break || \
   exit_code=$? && echo "packaging error: retry $iter in 10s" && \
@@ -49,9 +48,9 @@ RUN groupadd --gid 1000 logstash && \
   --home "/usr/share/logstash" \
   --no-create-home \
   logstash && \
-  curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-9.0.0-beta1-linux-x86_64.tar.gz | \
+  curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-9.0.0-rc1-linux-x86_64.tar.gz | \
   tar zxf - -C /usr/share && \
-  mv /usr/share/logstash-9.0.0-beta1 /usr/share/logstash && \
+  mv /usr/share/logstash-9.0.0-rc1 /usr/share/logstash && \
   chown -R logstash:root /usr/share/logstash config/ pipeline/ && \
   chmod -R g=u /usr/share/logstash && \
   mv config/* /usr/share/logstash/config && \
@@ -70,20 +69,20 @@ USER 1000
 
 EXPOSE 9600 5044
 
-LABEL org.label-schema.build-date=2025-02-05T17:06:06+00:00 \
+LABEL org.label-schema.build-date=2025-03-18T02:18:47+00:00 \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="logstash" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="9.0.0-beta1" \
-  org.opencontainers.image.created=2025-02-05T17:06:06+00:00 \
+  org.label-schema.version="9.0.0-rc1" \
+  org.opencontainers.image.created=2025-03-18T02:18:47+00:00 \
   org.opencontainers.image.description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.title="logstash" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="9.0.0-beta1" \
+  org.opencontainers.image.version="9.0.0-rc1" \
   description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
   license="Elastic License" \
   maintainer="info@elastic.co" \
