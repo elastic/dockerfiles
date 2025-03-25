@@ -9,7 +9,7 @@
 # Build stage 0 `builder`:
 # Extract Kibana artifact
 ################################################################################
-FROM docker.elastic.co/ubi9/ubi-minimal:latest AS builder
+FROM redhat/ubi9-minimal:latest AS builder
 
 RUN microdnf install -y findutils tar gzip
 
@@ -61,7 +61,7 @@ RUN mkdir -p /usr/share/fonts/local && \
 # Copy kibana from stage 0
 # Add entrypoint
 ################################################################################
-FROM docker.elastic.co/ubi9/ubi-minimal:latest
+FROM redhat/ubi9-minimal:latest
 EXPOSE 5601
 
 RUN for iter in {1..10}; do \

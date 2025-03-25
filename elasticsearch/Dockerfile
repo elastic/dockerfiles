@@ -9,7 +9,7 @@
 # Extract Elasticsearch artifact
 ################################################################################
 
-FROM docker.elastic.co/ubi9/ubi-minimal:latest AS builder
+FROM redhat/ubi9-minimal:latest AS builder
 
 # Install required packages to extract the Elasticsearch distribution
 
@@ -79,7 +79,7 @@ RUN sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elas
 # Add entrypoint
 ################################################################################
 
-FROM docker.elastic.co/ubi9/ubi-minimal:latest
+FROM redhat/ubi9-minimal:latest
 
 RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
       microdnf update --setopt=tsflags=nodocs -y && \

@@ -13,7 +13,7 @@ RUN go build
 
 # Build main image
 # Minimal distributions do not ship with en language packs.
-FROM docker.elastic.co/ubi9/ubi-minimal
+FROM redhat/ubi9-minimal:latest
 
 ENV ELASTIC_CONTAINER true
 ENV PATH=/usr/share/logstash/bin:$PATH
