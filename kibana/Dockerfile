@@ -16,7 +16,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.16.5-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-8.16.6-linux-$(arch).tar.gz && \
   cd -
 
 RUN mkdir /usr/share/kibana
@@ -108,25 +108,25 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2025-02-27T12:15:01.858Z" \
+LABEL org.label-schema.build-date="2025-03-20T11:10:41.087Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="edec21f4bf4e4069a9ff684197348d18a3bc9a69" \
+  org.label-schema.vcs-ref="39969cb4b1ab957faf1e78d25d83ec04192ddc21" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.16.5" \
-  org.opencontainers.image.created="2025-02-27T12:15:01.858Z" \
+  org.label-schema.version="8.16.6" \
+  org.opencontainers.image.created="2025-03-20T11:10:41.087Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="edec21f4bf4e4069a9ff684197348d18a3bc9a69" \
+  org.opencontainers.image.revision="39969cb4b1ab957faf1e78d25d83ec04192ddc21" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.16.5"
+  org.opencontainers.image.version="8.16.6"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
