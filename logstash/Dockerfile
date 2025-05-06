@@ -1,36 +1,27 @@
 # This Dockerfile was generated from templates/Dockerfile.erb
             
 # Build env2yaml
-FROM golang:1.23 as builder-env2yaml
+FROM golang:1.23 AS builder-env2yaml
 
-COPY env2yaml/env2yaml.go /tmp/go/src/env2yaml/env2yaml.go
-COPY env2yaml/go.mod      /tmp/go/src/env2yaml/go.mod
-COPY env2yaml/go.sum      /tmp/go/src/env2yaml/go.sum
+COPY env2yaml/env2yaml.go env2yaml/go.mod env2yaml/go.sum /tmp/go/src/env2yaml/
 
 WORKDIR /tmp/go/src/env2yaml
 
-RUN go build
+RUN go build -trimpath
 
 # Build main image
 # Minimal distributions do not ship with en language packs.
-FROM docker.elastic.co/ubi9/ubi-minimal
+FROM redhat/ubi9-minimal:latest
 
-ENV ELASTIC_CONTAINER true
+ENV ELASTIC_CONTAINER=true
 ENV PATH=/usr/share/logstash/bin:$PATH
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 WORKDIR /usr/share
 
-COPY --from=builder-env2yaml /tmp/go/src/env2yaml/env2yaml /usr/local/bin/env2yaml
-COPY config/pipelines.yml config/log4j2.properties config/log4j2.file.properties config/
-COPY config/logstash-full.yml config/logstash.yml
-COPY pipeline/default.conf pipeline/logstash.conf
-COPY bin/docker-entrypoint /usr/local/bin/
-
 # Install packages
 RUN for iter in {1..10}; do \
   microdnf update -y && \
-  microdnf upgrade -y && \
   microdnf install -y procps findutils tar gzip && \
   microdnf install -y openssl && \
   microdnf install -y which shadow-utils && \
@@ -48,20 +39,22 @@ RUN groupadd --gid 1000 logstash && \
   --home "/usr/share/logstash" \
   --no-create-home \
   logstash && \
-  curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-9.0.0-linux-x86_64.tar.gz | \
+  curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-9.0.1-linux-x86_64.tar.gz | \
   tar zxf - -C /usr/share && \
-  mv /usr/share/logstash-9.0.0 /usr/share/logstash && \
-  chown -R logstash:root /usr/share/logstash config/ pipeline/ && \
+  mv /usr/share/logstash-9.0.1 /usr/share/logstash && \
+  chown -R logstash:root /usr/share/logstash && \
   chmod -R g=u /usr/share/logstash && \
-  mv config/* /usr/share/logstash/config && \
-  mv pipeline /usr/share/logstash/pipeline && \
   mkdir /licenses && \
   mv /usr/share/logstash/NOTICE.TXT /licenses/NOTICE.TXT && \
   mv /usr/share/logstash/LICENSE.txt /licenses/LICENSE.txt && \
   find /usr/share/logstash -type d -exec chmod g+s {} \; && \
-  ln -s /usr/share/logstash /opt/logstash && \
-  chmod 0755 /usr/local/bin/docker-entrypoint && \
-  rmdir config
+  ln -s /usr/share/logstash /opt/logstash
+
+COPY --from=builder-env2yaml /tmp/go/src/env2yaml/env2yaml /usr/local/bin/env2yaml
+COPY --chown=logstash:root config/pipelines.yml config/log4j2.properties config/log4j2.file.properties /usr/share/logstash/config/
+COPY --chown=logstash:root config/logstash-full.yml /usr/share/logstash/config/logstash.yml
+COPY --chown=logstash:root pipeline/default.conf /usr/share/logstash/pipeline/logstash.conf
+COPY --chmod=0755 bin/docker-entrypoint /usr/local/bin/
 
 WORKDIR /usr/share/logstash
 
@@ -69,20 +62,20 @@ USER 1000
 
 EXPOSE 9600 5044
 
-LABEL org.label-schema.build-date=2025-03-24T15:32:20+00:00 \
+LABEL org.label-schema.build-date=2025-04-29T15:45:11+00:00 \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="logstash" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="9.0.0" \
-  org.opencontainers.image.created=2025-03-24T15:32:20+00:00 \
+  org.label-schema.version="9.0.1" \
+  org.opencontainers.image.created=2025-04-29T15:45:11+00:00 \
   org.opencontainers.image.description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.title="logstash" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="9.0.0" \
+  org.opencontainers.image.version="9.0.1" \
   description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
   license="Elastic License" \
   maintainer="info@elastic.co" \
