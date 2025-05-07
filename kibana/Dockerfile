@@ -14,7 +14,8 @@ FROM redhat/ubi9-minimal:latest AS builder
 RUN microdnf install -y findutils tar gzip
 
 RUN cd /tmp && \
-  curl --retry 8 -s -L \
+  arch="$(rpm --query --queryformat='%{ARCH}' rpm)"; \  && \
+  curl -f --retry 8 -s -L \
     --output kibana.tar.gz \
      https://artifacts.elastic.co/downloads/kibana/kibana-9.0.1-linux-$(arch).tar.gz && \
   cd -
@@ -34,18 +35,19 @@ RUN chmod -R g=u /usr/share/kibana
 # Add an init process, check the checksum to make sure it's a match
 RUN set -e ; \
     TINI_BIN="" ; \
-    case "$(arch)" in \
+    arch="$(rpm --query --queryformat='%{ARCH}' rpm)"; \
+    case "$arch" in \
         aarch64) \
             TINI_BIN='tini-arm64' ; \
             ;; \
         x86_64) \
             TINI_BIN='tini-amd64' ; \
             ;; \
-        *) echo >&2 "Unsupported architecture $(arch)" ; exit 1 ;; \
+        *) echo >&2 "Unsupported architecture $arch" ; exit 1 ;; \
     esac ; \
   TINI_VERSION='v0.19.0' ; \
-  curl --retry 8 -S -L -O "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/${TINI_BIN}" ; \
-  curl --retry 8 -S -L -O "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/${TINI_BIN}.sha256sum" ; \
+  curl -f --retry 8 -S -L -O "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/${TINI_BIN}" ; \
+  curl -f --retry 8 -S -L -O "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/${TINI_BIN}.sha256sum" ; \
   sha256sum -c "${TINI_BIN}.sha256sum" ; \
   rm "${TINI_BIN}.sha256sum" ; \
   mv "${TINI_BIN}" /bin/tini ; \
@@ -64,14 +66,9 @@ RUN mkdir -p /usr/share/fonts/local && \
 FROM redhat/ubi9-minimal:latest
 EXPOSE 5601
 
-RUN for iter in {1..10}; do \
-      microdnf update --setopt=tsflags=nodocs -y && \
-      microdnf install --setopt=tsflags=nodocs -y \
+RUN microdnf install --setopt=tsflags=nodocs -y \
       fontconfig liberation-fonts-common freetype shadow-utils nss findutils && \
-      microdnf clean all && exit_code=0 && break || exit_code=$? && echo "microdnf error: retry $iter in 10s" && \
-      sleep 10; \
-    done; \
-    (exit $exit_code)
+      microdnf clean all
 
 # Bring in Kibana from the initial stage.
 COPY --from=builder --chown=1000:0 /usr/share/kibana /usr/share/kibana
@@ -83,7 +80,7 @@ WORKDIR /usr/share/kibana
 
 RUN ln -s /usr/share/kibana /opt/kibana
 
-ENV ELASTIC_CONTAINER true
+ENV ELASTIC_CONTAINER=true
 ENV PATH=/usr/share/kibana/bin:$PATH
 
 # Set some Kibana configuration defaults.
@@ -134,8 +131,7 @@ LABEL name="Kibana" \
   summary="Kibana" \
   description="Your window into the Elastic Stack."
 
-RUN mkdir /licenses && \
-    cp LICENSE.txt /licenses/LICENSE
+RUN mkdir /licenses && ln LICENSE.txt /licenses/LICENSE
 
 ENTRYPOINT ["/bin/tini", "--"]
 
