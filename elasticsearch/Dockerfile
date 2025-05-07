@@ -17,7 +17,7 @@ RUN microdnf install -y findutils tar gzip
 # build. Instead, we check the binary against the published checksum.
 RUN set -eux ; \
     tini_bin="" ; \
-    arch="$(rpm --query --queryformat='%{ARCH}' rpm)";     case "$(arch)" in \
+    arch="$(rpm --query --queryformat='%{ARCH}' rpm)";     case "${arch}" in \
         aarch64) tini_bin='tini-arm64' ;; \
         x86_64)  tini_bin='tini-amd64' ;; \
         *) echo >&2 ; echo >&2 "Unsupported architecture $arch" ; echo >&2 ; exit 1 ;; \
@@ -30,7 +30,7 @@ RUN set -eux ; \
     chmod 0555 /bin/tini
 
 WORKDIR /usr/share/elasticsearch
-RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.0.1-linux-$(arch).tar.gz
+RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.0.1-linux-${arch}.tar.gz
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1 && \
 # Configure the distribution for Docker
     sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elasticsearch-env && \
@@ -95,7 +95,6 @@ ENV SHELL=/bin/bash
 COPY --chmod=0555 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 RUN chmod g=u /etc/passwd && \
-    chmod 0555 /usr/local/bin/docker-entrypoint.sh && \
     find / -xdev -perm -4000 -exec chmod ug-s {} + && \
     chmod 0775 /usr/share/elasticsearch && \
     chown elasticsearch bin config config/jvm.options.d data logs plugins
