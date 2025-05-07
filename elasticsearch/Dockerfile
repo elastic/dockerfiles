@@ -95,7 +95,9 @@ ENV SHELL=/bin/bash
 COPY --chmod=0555 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 RUN chmod g=u /etc/passwd && \
-    find / -xdev -perm -4000 -exec chmod ug-s {} + 
+    find / -xdev -perm -4000 -exec chmod ug-s {} + && \
+    chmod 0775 /usr/share/elasticsearch && \
+    chown elasticsearch bin config config/jvm.options.d data logs plugins
 
 EXPOSE 9200 9300
 
