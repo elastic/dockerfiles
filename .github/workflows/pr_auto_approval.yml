@@ -22,4 +22,4 @@ jobs:
           echo "PR Head Ref: ${{ github.event.pull_request.head.ref }}"
           echo "PR User Login: ${{ github.event.pull_request.user.login }}"
       - name: Auto Approve
-        uses: hmarr/auto-approve-action@v3
+        uses: hmarr/auto-approve-action@a2e6f2a0ccf5c63ef8754de360464edbf47e66ee  # v3.0.0
