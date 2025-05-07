@@ -14,7 +14,7 @@ FROM redhat/ubi9-minimal:latest AS builder
 RUN microdnf install -y findutils tar gzip
 
 RUN cd /tmp && \
-  arch="$(rpm --query --queryformat='%{ARCH}' rpm)"; \  && \
+  arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && \
   curl -f --retry 8 -s -L \
     --output kibana.tar.gz \
      https://artifacts.elastic.co/downloads/kibana/kibana-9.0.1-linux-$(arch).tar.gz && \
