@@ -14,10 +14,10 @@ FROM redhat/ubi9-minimal:latest AS builder
 RUN microdnf install -y findutils tar gzip
 
 RUN cd /tmp && \
-  arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && \
+  arch="$(rpm --query --queryformat='%{ARCH}' rpm)"; \  && \
   curl -f --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-9.0.1-linux-${arch}.tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-9.0.2-linux-$arch.tar.gz && \
   cd -
 
 RUN mkdir /usr/share/kibana
@@ -35,21 +35,21 @@ RUN chmod -R g=u /usr/share/kibana
 # Add an init process, check the checksum to make sure it's a match
 RUN set -e ; \
     TINI_BIN="" ; \
-    arch="$(rpm --query --queryformat='%{ARCH}' rpm)"; \
+    arch="$(rpm --query --queryformat='%{ARCH}' rpm)"; \ 
     case "$arch" in \
         aarch64) \
             TINI_BIN='tini-arm64' ; \
-            TINI_CHECKSUM='07952557df20bfd2a95f9bef198b445e006171969499a1d361bd9e6f8e5e0e81' ; \
             ;; \
         x86_64) \
             TINI_BIN='tini-amd64' ; \
-            TINI_CHECKSUM='93dcc18adc78c65a028a84799ecf8ad40c936fdfc5f2a57b1acda5a8117fa82c' ; \
             ;; \
         *) echo >&2 "Unsupported architecture $arch" ; exit 1 ;; \
     esac ; \
   TINI_VERSION='v0.19.0' ; \
   curl -f --retry 8 -S -L -O "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/${TINI_BIN}" ; \
-  echo "${TINI_CHECKSUM} ${TINI_BIN}" | sha256sum -c - ; \
+  curl -f --retry 8 -S -L -O "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/${TINI_BIN}.sha256sum" ; \
+  sha256sum -c "${TINI_BIN}.sha256sum" ; \
+  rm "${TINI_BIN}.sha256sum" ; \
   mv "${TINI_BIN}" /bin/tini ; \
   chmod +x /bin/tini
 RUN mkdir -p /usr/share/fonts/local && \
@@ -103,30 +103,30 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2025-04-30T12:17:16.628Z" \
+LABEL org.label-schema.build-date="2025-05-28T10:54:28.565Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="0df588b1a307954a3103991180df23c70184d34c" \
+  org.label-schema.vcs-ref="9861b44c7eec37c4ff6b68a464579ab4cbd5611e" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="9.0.1" \
-  org.opencontainers.image.created="2025-04-30T12:17:16.628Z" \
+  org.label-schema.version="9.0.2" \
+  org.opencontainers.image.created="2025-05-28T10:54:28.565Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="0df588b1a307954a3103991180df23c70184d34c" \
+  org.opencontainers.image.revision="9861b44c7eec37c4ff6b68a464579ab4cbd5611e" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="9.0.1"
+  org.opencontainers.image.version="9.0.2"
 
 LABEL name="Kibana" \
   maintainer="infra@elastic.co" \
   vendor="Elastic" \
-  version="9.0.1" \
+  version="9.0.2" \
   release="1" \
   summary="Kibana" \
   description="Your window into the Elastic Stack."
