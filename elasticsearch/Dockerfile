@@ -17,7 +17,7 @@ RUN microdnf install -y findutils tar gzip
 # build. Instead, we check the binary against the published checksum.
 RUN set -eux ; \
     tini_bin="" ; \
-    arch="$(rpm --query --queryformat='%{ARCH}' rpm)";     case "${arch}" in \
+    arch="$(rpm --query --queryformat='%{ARCH}' rpm)";     case "$(arch)" in \
         aarch64) tini_bin='tini-arm64' ;; \
         x86_64)  tini_bin='tini-amd64' ;; \
         *) echo >&2 ; echo >&2 "Unsupported architecture $arch" ; echo >&2 ; exit 1 ;; \
@@ -30,7 +30,7 @@ RUN set -eux ; \
     chmod 0555 /bin/tini
 
 WORKDIR /usr/share/elasticsearch
-RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.0.1-linux-${arch}.tar.gz
+RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.0.2-linux-$(arch).tar.gz
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1 && \
 # Configure the distribution for Docker
     sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elasticsearch-env && \
@@ -95,36 +95,37 @@ ENV SHELL=/bin/bash
 COPY --chmod=0555 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 RUN chmod g=u /etc/passwd && \
+    chmod 0555 /usr/local/bin/docker-entrypoint.sh && \
     find / -xdev -perm -4000 -exec chmod ug-s {} + && \
     chmod 0775 /usr/share/elasticsearch && \
     chown elasticsearch bin config config/jvm.options.d data logs plugins
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2025-04-30T10:07:41.393025990Z" \
+LABEL org.label-schema.build-date="2025-05-28T10:06:37.834829258Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="73f7594ea00db50aa7e941e151a5b3985f01e364" \
+  org.label-schema.vcs-ref="0a58bc1dc7a4ae5412db66624aab968370bd44ce" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="9.0.1" \
-  org.opencontainers.image.created="2025-04-30T10:07:41.393025990Z" \
+  org.label-schema.version="9.0.2" \
+  org.opencontainers.image.created="2025-05-28T10:06:37.834829258Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="73f7594ea00db50aa7e941e151a5b3985f01e364" \
+  org.opencontainers.image.revision="0a58bc1dc7a4ae5412db66624aab968370bd44ce" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="9.0.1"
+  org.opencontainers.image.version="9.0.2"
 
 LABEL name="Elasticsearch" \
   maintainer="infra@elastic.co" \
   vendor="Elastic" \
-  version="9.0.1" \
+  version="9.0.2" \
   release="1" \
   summary="Elasticsearch" \
   description="You know, for search."
