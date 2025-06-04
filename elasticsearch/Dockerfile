@@ -17,7 +17,7 @@ RUN microdnf install -y findutils tar gzip
 # build. Instead, we check the binary against the published checksum.
 RUN set -eux ; \
     tini_bin="" ; \
-    arch="$(rpm --query --queryformat='%{ARCH}' rpm)";     case "${arch}" in \
+    arch="$(rpm --query --queryformat='%{ARCH}' rpm)";     case "$arch" in \
         aarch64) tini_bin='tini-arm64' ;; \
         x86_64)  tini_bin='tini-amd64' ;; \
         *) echo >&2 ; echo >&2 "Unsupported architecture $arch" ; echo >&2 ; exit 1 ;; \
