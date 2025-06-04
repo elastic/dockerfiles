@@ -37,7 +37,7 @@ RUN groupadd --gid 1000 logstash && \
   curl -f -Lo logstash.tar.gz "https://artifacts.elastic.co/downloads/logstash/logstash-9.0.2-linux-${arch}.tar.gz" && \
   tar -zxf logstash.tar.gz -C /usr/share && \
   rm logstash.tar.gz && \
-  mv /usr/share/logstash-9.0.1 /usr/share/logstash && \
+  mv /usr/share/logstash-9.0.2 /usr/share/logstash && \
   chown -R logstash:root /usr/share/logstash && \
   chmod -R g=u /usr/share/logstash && \
   mkdir /licenses && \
