@@ -20,17 +20,11 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 WORKDIR /usr/share
 
 # Install packages
-RUN for iter in {1..10}; do \
-  microdnf update -y && \
+RUN \
   microdnf install -y procps findutils tar gzip && \
   microdnf install -y openssl && \
   microdnf install -y which shadow-utils && \
-  microdnf clean all && \
-  exit_code=0 && break || \
-  exit_code=$? && echo "packaging error: retry $iter in 10s" && \
-  microdnf clean all && sleep 10; \
-  done; \
-  (exit $exit_code)
+  microdnf clean all
 
 # Provide a non-root user to run the process
 # Add Logstash itself and set permissions
@@ -39,8 +33,10 @@ RUN groupadd --gid 1000 logstash && \
   --home "/usr/share/logstash" \
   --no-create-home \
   logstash && \
-  curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-9.0.2-linux-x86_64.tar.gz | \
-  tar zxf - -C /usr/share && \
+  arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && \
+  curl -f -Lo logstash.tar.gz "https://artifacts.elastic.co/downloads/logstash/logstash-9.0.2-linux-${arch}.tar.gz" && \
+  tar -zxf logstash.tar.gz -C /usr/share && \
+  rm logstash.tar.gz && \
   mv /usr/share/logstash-9.0.2 /usr/share/logstash && \
   chown -R logstash:root /usr/share/logstash && \
   chmod -R g=u /usr/share/logstash && \
