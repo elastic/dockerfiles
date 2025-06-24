@@ -9,7 +9,7 @@
 # Build stage 0 `builder`:
 # Extract Kibana artifact
 ################################################################################
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:24.04 AS builder
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 
@@ -36,7 +36,7 @@ RUN chmod -R g=u /usr/share/kibana
 # Copy kibana from stage 0
 # Add entrypoint
 ################################################################################
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 EXPOSE 5601
 
 RUN for iter in {1..10}; do \
@@ -99,7 +99,7 @@ RUN chmod g+ws /usr/share/kibana && \
 RUN find / -xdev -perm -4000 -exec chmod u-s {} +
 
 # Provide a non-root user to run the process.
-RUN groupadd --gid 1000 kibana && \
+RUN userdel -r ubuntu && groupadd --gid 1000 kibana && \
     useradd --uid 1000 --gid 1000 -G 0 \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
