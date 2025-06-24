@@ -9,7 +9,7 @@
 # Extract Elasticsearch artifact
 ################################################################################
 
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:24.04 AS builder
 
 # Install required packages to extract the Elasticsearch distribution
 
@@ -44,7 +44,7 @@ RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.18.2-linux-$(arch).tar.gz
+RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.18.3-linux-$(arch).tar.gz
 
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1
 
@@ -79,7 +79,7 @@ RUN sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elas
 # Add entrypoint
 ################################################################################
 
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 # Change default shell to bash, then install required packages with retries.
 RUN yes no | dpkg-reconfigure dash && \
@@ -88,7 +88,7 @@ RUN yes no | dpkg-reconfigure dash && \
       apt-get update && \
       apt-get upgrade -y && \
       apt-get install -y --no-install-recommends \
-        ca-certificates curl netcat p11-kit unzip zip  && \
+        ca-certificates curl netcat-openbsd p11-kit unzip zip  && \
       apt-get clean && \
       rm -rf /var/lib/apt/lists/* && \
       exit_code=0 && break || \
@@ -96,9 +96,10 @@ RUN yes no | dpkg-reconfigure dash && \
     done; \
     exit $exit_code
 
-RUN groupadd -g 1000 elasticsearch && \
-    adduser --uid 1000 --gid 1000 --home /usr/share/elasticsearch elasticsearch && \
-    adduser elasticsearch root && \
+RUN userdel -r ubuntu && \
+    groupadd -g 1000 elasticsearch && \
+    useradd --uid 1000 --gid 1000 --home-dir /usr/share/elasticsearch --create-home elasticsearch && \
+    usermod -aG root elasticsearch && \
     chown -R 0:0 /usr/share/elasticsearch
 
 ENV ELASTIC_CONTAINER true
@@ -137,25 +138,25 @@ RUN /etc/ca-certificates/update.d/docker-openjdk
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2025-05-23T10:07:06.210694702Z" \
+LABEL org.label-schema.build-date="2025-06-18T22:08:41.171261054Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="c6b8d8d951c631db715485edc1a74190cdce4189" \
+  org.label-schema.vcs-ref="28fc77664903e7de48ba5632e5d8bfeb5e3ed39c" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.18.2" \
-  org.opencontainers.image.created="2025-05-23T10:07:06.210694702Z" \
+  org.label-schema.version="8.18.3" \
+  org.opencontainers.image.created="2025-06-18T22:08:41.171261054Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="c6b8d8d951c631db715485edc1a74190cdce4189" \
+  org.opencontainers.image.revision="28fc77664903e7de48ba5632e5d8bfeb5e3ed39c" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.18.2"
+  org.opencontainers.image.version="8.18.3"
 
 # Our actual entrypoint is `tini`, a minimal but functional init program. It
 # calls the entrypoint we provide, while correctly forwarding signals.
