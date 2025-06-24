@@ -9,14 +9,14 @@
 # Build stage 0 `builder`:
 # Extract Kibana artifact
 ################################################################################
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:24.04 AS builder
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.18.2-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-8.18.3-linux-$(arch).tar.gz && \
   cd -
 
 RUN mkdir /usr/share/kibana
@@ -61,7 +61,7 @@ RUN mkdir -p /usr/share/fonts/local && \
 # Copy kibana from stage 0
 # Add entrypoint
 ################################################################################
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 EXPOSE 5601
 
 RUN for iter in {1..10}; do \
@@ -103,30 +103,30 @@ RUN chmod g+ws /usr/share/kibana && \
 RUN find / -xdev -perm -4000 -exec chmod u-s {} +
 
 # Provide a non-root user to run the process.
-RUN groupadd --gid 1000 kibana && \
+RUN userdel -r ubuntu && groupadd --gid 1000 kibana && \
     useradd --uid 1000 --gid 1000 -G 0 \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2025-05-23T11:08:08.589Z" \
+LABEL org.label-schema.build-date="2025-06-18T18:13:59.370Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="c381b5aca4e1e164e92bf39435fb80557f7d32f3" \
+  org.label-schema.vcs-ref="70e0ee45ae6f2e5cd35b7af4822d86ffa877ad9c" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.18.2" \
-  org.opencontainers.image.created="2025-05-23T11:08:08.589Z" \
+  org.label-schema.version="8.18.3" \
+  org.opencontainers.image.created="2025-06-18T18:13:59.370Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="c381b5aca4e1e164e92bf39435fb80557f7d32f3" \
+  org.opencontainers.image.revision="70e0ee45ae6f2e5cd35b7af4822d86ffa877ad9c" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.18.2"
+  org.opencontainers.image.version="8.18.3"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
