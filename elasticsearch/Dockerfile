@@ -15,22 +15,20 @@ RUN microdnf install -y findutils tar gzip
 # The tini GitHub page gives instructions for verifying the binary using
 # gpg, but the keyservers are slow to return the key and this can fail the
 # build. Instead, we check the binary against the published checksum.
-RUN set -eux ; \
-    tini_bin="" ; \
-    arch="$(rpm --query --queryformat='%{ARCH}' rpm)";     case "$arch" in \
-        aarch64) tini_bin='tini-arm64' ;; \
-        x86_64)  tini_bin='tini-amd64' ;; \
-        *) echo >&2 ; echo >&2 "Unsupported architecture $arch" ; echo >&2 ; exit 1 ;; \
+RUN set -eux; \
+    arch="$(rpm --query --queryformat='%{ARCH}' rpm)"; \
+    case "$arch" in \
+        aarch64) tini_bin='tini-arm64'; tini_sum='07952557df20bfd2a95f9bef198b445e006171969499a1d361bd9e6f8e5e0e81' ;; \
+        x86_64)  tini_bin='tini-amd64'; tini_sum='93dcc18adc78c65a028a84799ecf8ad40c936fdfc5f2a57b1acda5a8117fa82c' ;; \
+        *) echo >&2 "Unsupported architecture $arch"; exit 1 ;; \
     esac ; \
-    curl -f --retry 10 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin} ; \
-    curl -f --retry 10 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin}.sha256sum ; \
-    sha256sum -c ${tini_bin}.sha256sum ; \
-    rm ${tini_bin}.sha256sum ; \
-    mv ${tini_bin} /bin/tini ; \
+    curl -f --retry 10 -S -L -o /tmp/tini https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin}; \
+    echo "${tini_sum}  /tmp/tini" | sha256sum -c -; \
+    mv /tmp/tini /bin/tini; \
     chmod 0555 /bin/tini
 
 WORKDIR /usr/share/elasticsearch
-RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.0.2-linux-$arch.tar.gz
+RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.0.3-linux-$arch.tar.gz
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1 && \
 # Configure the distribution for Docker
     sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elasticsearch-env && \
@@ -101,30 +99,30 @@ RUN chmod g=u /etc/passwd && \
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2025-05-28T10:06:37.834829258Z" \
+LABEL org.label-schema.build-date="2025-06-18T22:09:56.772581489Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="0a58bc1dc7a4ae5412db66624aab968370bd44ce" \
+  org.label-schema.vcs-ref="cc7302afc8499e83262ba2ceaa96451681f0609d" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="9.0.2" \
-  org.opencontainers.image.created="2025-05-28T10:06:37.834829258Z" \
+  org.label-schema.version="9.0.3" \
+  org.opencontainers.image.created="2025-06-18T22:09:56.772581489Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="0a58bc1dc7a4ae5412db66624aab968370bd44ce" \
+  org.opencontainers.image.revision="cc7302afc8499e83262ba2ceaa96451681f0609d" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="9.0.2"
+  org.opencontainers.image.version="9.0.3"
 
 LABEL name="Elasticsearch" \
   maintainer="infra@elastic.co" \
   vendor="Elastic" \
-  version="9.0.2" \
+  version="9.0.3" \
   release="1" \
   summary="Elasticsearch" \
   description="You know, for search."
