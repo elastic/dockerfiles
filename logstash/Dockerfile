@@ -2,7 +2,7 @@
 
 
                                         
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 RUN for iter in {1..10}; do \
       export DEBIAN_FRONTEND=noninteractive && \
@@ -22,8 +22,8 @@ sleep 10; done; \
 (exit $exit_code)
 
 # Provide a non-root user to run the process.
-RUN groupadd --gid 1000 logstash && \
-  adduser --uid 1000 --gid 1000 --home /usr/share/logstash --no-create-home logstash
+RUN userdel -r ubuntu && groupadd --gid 1000 logstash && \
+  useradd --uid 1000 --gid 1000 --home /usr/share/logstash --no-create-home logstash
 
 # Add Logstash itself.
 RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.17.8-linux-$(arch).tar.gz | \
