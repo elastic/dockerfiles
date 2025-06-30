@@ -9,7 +9,7 @@
 # Extract Elasticsearch artifact
 ################################################################################
 
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:24.04 AS builder
 
 # Install required packages to extract the Elasticsearch distribution
 
@@ -79,7 +79,7 @@ RUN sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elas
 # Add entrypoint
 ################################################################################
 
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 # Change default shell to bash, then install required packages with retries.
 RUN yes no | dpkg-reconfigure dash && \
@@ -88,7 +88,7 @@ RUN yes no | dpkg-reconfigure dash && \
       apt-get update && \
       apt-get upgrade -y && \
       apt-get install -y --no-install-recommends \
-        ca-certificates curl netcat p11-kit unzip zip  && \
+        ca-certificates curl netcat-openbsd p11-kit unzip zip  && \
       apt-get clean && \
       rm -rf /var/lib/apt/lists/* && \
       exit_code=0 && break || \
@@ -96,9 +96,10 @@ RUN yes no | dpkg-reconfigure dash && \
     done; \
     exit $exit_code
 
-RUN groupadd -g 1000 elasticsearch && \
-    adduser --uid 1000 --gid 1000 --home /usr/share/elasticsearch elasticsearch && \
-    adduser elasticsearch root && \
+RUN userdel -r ubuntu && \
+    groupadd -g 1000 elasticsearch && \
+    useradd --uid 1000 --gid 1000 --home-dir /usr/share/elasticsearch --create-home elasticsearch && \
+    usermod -aG root elasticsearch && \
     chown -R 0:0 /usr/share/elasticsearch
 
 ENV ELASTIC_CONTAINER true
