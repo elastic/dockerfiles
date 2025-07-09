@@ -22,8 +22,8 @@ sleep 10; done; \
 (exit $exit_code)
 
 # Provide a non-root user to run the process.
-RUN groupadd --gid 1000 logstash && \
-  adduser --uid 1000 --gid 1000 --home /usr/share/logstash --no-create-home logstash
+RUN userdel -r ubuntu && groupadd --gid 1000 logstash && \
+  useradd --uid 1000 --gid 1000 --home /usr/share/logstash --no-create-home logstash
 
 # Add Logstash itself.
 RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-8.18.3-linux-$(arch).tar.gz | \
