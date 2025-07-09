@@ -2,7 +2,7 @@
 
 
                                         
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 RUN for iter in {1..10}; do \
       export DEBIAN_FRONTEND=noninteractive && \
