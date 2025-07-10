@@ -21,7 +21,6 @@ WORKDIR /usr/share
 
 # Install packages
 RUN \
-  microdnf update -y && \
   microdnf install -y procps findutils tar gzip && \
   microdnf install -y openssl && \
   microdnf install -y which shadow-utils && \
