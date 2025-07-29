@@ -1,50 +1,36 @@
-################################################################################
-# This Dockerfile was generated from the template at distribution/src/docker/Dockerfile
-#
-# Beginning of multi stage Dockerfile
-################################################################################
+
 
 ################################################################################
 # Build stage 1 `builder`:
 # Extract Elasticsearch artifact
 ################################################################################
 
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:24.04 AS builder
 
 # Install required packages to extract the Elasticsearch distribution
+RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 
-RUN for iter in 1 2 3 4 5 6 7 8 9 10; do \
-      apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl  && \
-      exit_code=0 && break || \
-        exit_code=$? && echo "apt-get error: retry $iter in 10s" && sleep 10; \
-    done; \
-    exit $exit_code
-
-    # `tini` is a tiny but valid init for containers. This is used to cleanly
-    # control how ES and any child processes are shut down.
-    # For wolfi we pick it from the blessed wolfi package registry.
-    #
-    # The tini GitHub page gives instructions for verifying the binary using
-    # gpg, but the keyservers are slow to return the key and this can fail the
-    # build. Instead, we check the binary against the published checksum.
-    RUN set -eux ; \
-        tini_bin="" ; \
-        case "$(arch)" in \
-            aarch64) tini_bin='tini-arm64' ;; \
-            x86_64)  tini_bin='tini-amd64' ;; \
-            *) echo >&2 ; echo >&2 "Unsupported architecture $(arch)" ; echo >&2 ; exit 1 ;; \
-        esac ; \
-        curl --retry 10 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin} ; \
-        curl --retry 10 -S -L -O https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin}.sha256sum ; \
-        sha256sum -c ${tini_bin}.sha256sum ; \
-        rm ${tini_bin}.sha256sum ; \
-        mv ${tini_bin} /bin/tini ; \
-        chmod 0555 /bin/tini
+# `tini` is a tiny but valid init for containers. This is used to cleanly
+# control how ES and any child processes are shut down.
+#
+# The tini GitHub page gives instructions for verifying the binary using
+# gpg, but the keyservers are slow to return the key and this can fail the
+# build. Instead, we check the binary against the published checksum.
+RUN set -eux; \
+    case "$(arch)" in \
+        aarch64) tini_bin='tini-arm64'; tini_sum='07952557df20bfd2a95f9bef198b445e006171969499a1d361bd9e6f8e5e0e81' ;; \
+        x86_64)  tini_bin='tini-amd64'; tini_sum='93dcc18adc78c65a028a84799ecf8ad40c936fdfc5f2a57b1acda5a8117fa82c' ;; \
+        *) echo >&2 "Unsupported architecture $arch"; exit 1 ;; \
+    esac ; \
+    curl -f --retry 10 -S -L -o /tmp/tini https://github.com/krallin/tini/releases/download/v0.19.0/${tini_bin}; \
+    echo "${tini_sum}  /tmp/tini" | sha256sum -c -; \
+    mv /tmp/tini /bin/tini; \
+    chmod 0555 /bin/tini
 
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.17.0-linux-$(arch).tar.gz
+RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.19.0-linux-$(arch).tar.gz
 
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1
 
@@ -79,16 +65,16 @@ RUN sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elas
 # Add entrypoint
 ################################################################################
 
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 # Change default shell to bash, then install required packages with retries.
 RUN yes no | dpkg-reconfigure dash && \
-    for iter in 1 2 3 4 5 6 7 8 9 10; do \
+for iter in 1 2 3 4 5 6 7 8 9 10; do \
       export DEBIAN_FRONTEND=noninteractive && \
       apt-get update && \
       apt-get upgrade -y && \
       apt-get install -y --no-install-recommends \
-        ca-certificates curl netcat p11-kit unzip zip  && \
+        ca-certificates curl netcat-openbsd p11-kit unzip zip  && \
       apt-get clean && \
       rm -rf /var/lib/apt/lists/* && \
       exit_code=0 && break || \
@@ -96,21 +82,21 @@ RUN yes no | dpkg-reconfigure dash && \
     done; \
     exit $exit_code
 
-RUN groupadd -g 1000 elasticsearch && \
-    adduser --uid 1000 --gid 1000 --home /usr/share/elasticsearch elasticsearch && \
-    adduser elasticsearch root && \
+RUN userdel -r ubuntu && \
+    groupadd -g 1000 elasticsearch && \
+    useradd --uid 1000 --gid 1000 --home-dir /usr/share/elasticsearch --create-home elasticsearch && \
+    usermod -aG root elasticsearch && \
     chown -R 0:0 /usr/share/elasticsearch
 
-ENV ELASTIC_CONTAINER true
+ENV ELASTIC_CONTAINER=true
 
 WORKDIR /usr/share/elasticsearch
 
 COPY --from=builder --chown=0:0 /usr/share/elasticsearch /usr/share/elasticsearch
-
 COPY --from=builder --chown=0:0 /bin/tini /bin/tini
 
-ENV PATH /usr/share/elasticsearch/bin:$PATH
-ENV SHELL /bin/bash
+ENV PATH=/usr/share/elasticsearch/bin:$PATH
+ENV SHELL=/bin/bash
 COPY bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 # 1. Sync the user and group permissions of /etc/passwd
@@ -137,25 +123,25 @@ RUN /etc/ca-certificates/update.d/docker-openjdk
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2024-12-11T12:08:05.663969764Z" \
+LABEL org.label-schema.build-date="2025-07-23T22:10:18.138212839Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="2b6a7fed44faa321997703718f07ee0420804b41" \
+  org.label-schema.vcs-ref="93788a8c2882eb5b606510680fac214cff1c7a22" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.17.0" \
-  org.opencontainers.image.created="2024-12-11T12:08:05.663969764Z" \
+  org.label-schema.version="8.19.0" \
+  org.opencontainers.image.created="2025-07-23T22:10:18.138212839Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="2b6a7fed44faa321997703718f07ee0420804b41" \
+  org.opencontainers.image.revision="93788a8c2882eb5b606510680fac214cff1c7a22" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.17.0"
+  org.opencontainers.image.version="8.19.0"
 
 # Our actual entrypoint is `tini`, a minimal but functional init program. It
 # calls the entrypoint we provide, while correctly forwarding signals.

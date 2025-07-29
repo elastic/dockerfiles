@@ -9,14 +9,15 @@
 # Build stage 0 `builder`:
 # Extract Kibana artifact
 ################################################################################
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:24.04 AS builder
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 
 RUN cd /tmp && \
-  curl --retry 8 -s -L \
+  arch="$(dpkg --print-architecture)" && \
+  curl -f --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.17.0-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-8.19.0-linux-${arch}.tar.gz && \
   cd -
 
 RUN mkdir /usr/share/kibana
@@ -34,20 +35,22 @@ RUN chmod -R g=u /usr/share/kibana
 # Add an init process, check the checksum to make sure it's a match
 RUN set -e ; \
     TINI_BIN="" ; \
-    case "$(arch)" in \
-        aarch64) \
+    arch="$(dpkg --print-architecture)" ; \
+    case "$arch" in \
+        arm64) \
             TINI_BIN='tini-arm64' ; \
+            TINI_CHECKSUM='07952557df20bfd2a95f9bef198b445e006171969499a1d361bd9e6f8e5e0e81' ; \
             ;; \
-        x86_64) \
+        amd64) \
             TINI_BIN='tini-amd64' ; \
+            TINI_CHECKSUM='93dcc18adc78c65a028a84799ecf8ad40c936fdfc5f2a57b1acda5a8117fa82c' ; \
             ;; \
-        *) echo >&2 "Unsupported architecture $(arch)" ; exit 1 ;; \
+        *) echo >&2 "Unsupported architecture $arch" ; exit 1 ;; \
     esac ; \
   TINI_VERSION='v0.19.0' ; \
-  curl --retry 8 -S -L -O "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/${TINI_BIN}" ; \
-  curl --retry 8 -S -L -O "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/${TINI_BIN}.sha256sum" ; \
-  sha256sum -c "${TINI_BIN}.sha256sum" ; \
-  rm "${TINI_BIN}.sha256sum" ; \
+  curl -f --retry 8 -S -L -O "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/${TINI_BIN}" ; \
+  curl -f --retry 8 -S -L -O "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/${TINI_BIN}.sha256sum" ; \
+  echo "${TINI_CHECKSUM} ${TINI_BIN}" | sha256sum -c - ; \
   mv "${TINI_BIN}" /bin/tini ; \
   chmod +x /bin/tini
 RUN mkdir -p /usr/share/fonts/local && \
@@ -61,20 +64,14 @@ RUN mkdir -p /usr/share/fonts/local && \
 # Copy kibana from stage 0
 # Add entrypoint
 ################################################################################
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 EXPOSE 5601
 
-RUN for iter in {1..10}; do \
-      export DEBIAN_FRONTEND=noninteractive && \
-      apt-get update  && \
-      apt-get upgrade -y  && \
-      apt-get install -y --no-install-recommends \
-       fontconfig libnss3 curl ca-certificates && \
+RUN export DEBIAN_FRONTEND=noninteractive && \
+      apt-get update && \
+      apt-get install -y --no-install-recommends fontconfig fonts-liberation libnss3 curl ca-certificates && \
       apt-get clean && \
-      rm -rf /var/lib/apt/lists/* && exit_code=0 && break || exit_code=$? && echo "apt-get error: retry $iter in 10s" && \
-      sleep 10; \
-    done; \
-    (exit $exit_code)
+      rm -rf /var/lib/apt/lists/*
 
 # Bring in Kibana from the initial stage.
 COPY --from=builder --chown=1000:0 /usr/share/kibana /usr/share/kibana
@@ -83,9 +80,10 @@ COPY --from=builder --chown=0:0 /bin/tini /bin/tini
 COPY --from=builder --chown=0:0 /usr/share/fonts/local/NotoSansCJK-Regular.ttc /usr/share/fonts/local/NotoSansCJK-Regular.ttc
 RUN fc-cache -v
 WORKDIR /usr/share/kibana
+
 RUN ln -s /usr/share/kibana /opt/kibana
 
-ENV ELASTIC_CONTAINER true
+ENV ELASTIC_CONTAINER=true
 ENV PATH=/usr/share/kibana/bin:$PATH
 
 # Set some Kibana configuration defaults.
@@ -103,30 +101,30 @@ RUN chmod g+ws /usr/share/kibana && \
 RUN find / -xdev -perm -4000 -exec chmod u-s {} +
 
 # Provide a non-root user to run the process.
-RUN groupadd --gid 1000 kibana && \
+RUN userdel -r ubuntu && groupadd --gid 1000 kibana && \
     useradd --uid 1000 --gid 1000 -G 0 \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2024-12-11T11:12:31.173Z" \
+LABEL org.label-schema.build-date="2025-07-23T19:53:14.974Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="86cbc85e621f4f3f701ed230f4e859ac5a80145b" \
+  org.label-schema.vcs-ref="ffd7cbf34ac1234c78354f2a22ef5f1703c04eaf" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.17.0" \
-  org.opencontainers.image.created="2024-12-11T11:12:31.173Z" \
+  org.label-schema.version="8.19.0" \
+  org.opencontainers.image.created="2025-07-23T19:53:14.974Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="86cbc85e621f4f3f701ed230f4e859ac5a80145b" \
+  org.opencontainers.image.revision="ffd7cbf34ac1234c78354f2a22ef5f1703c04eaf" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.17.0"
+  org.opencontainers.image.version="8.19.0"
 
 
 ENTRYPOINT ["/bin/tini", "--"]

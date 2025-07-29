@@ -40,6 +40,7 @@ kibana_vars=(
     csp.report_uri
     csp.report_to
     csp.report_only.form_action
+    csp.report_only.object_src
     permissionsPolicy.report_to
     data.autocomplete.valueSuggestions.terminateAfter
     data.autocomplete.valueSuggestions.timeout
@@ -85,6 +86,7 @@ kibana_vars=(
     elasticsearch.username
     enterpriseSearch.accessCheckTimeout
     enterpriseSearch.accessCheckTimeoutWarning
+    enterpriseSearch.appsDisabled
     enterpriseSearch.host
     externalUrl.policy
     i18n.locale
@@ -165,6 +167,7 @@ kibana_vars=(
     server.name
     server.port
     server.protocol
+    server.prototypeHardening
     server.publicBaseUrl
     server.requestId.allowFromAnyIp
     server.requestId.ipAllowlist
@@ -213,6 +216,9 @@ kibana_vars=(
     xpack.actions.allowedHosts
     xpack.actions.customHostSettings
     xpack.actions.email.domain_allowlist
+    xpack.actions.email.services.ses.host
+    xpack.actions.email.services.ses.port
+    xpack.actions.email.services.enabled
     xpack.actions.enableFooterInEmail
     xpack.actions.enabledActionTypes
     xpack.actions.maxResponseContentLength
@@ -227,6 +233,7 @@ kibana_vars=(
     xpack.actions.responseTimeout
     xpack.actions.ssl.proxyVerificationMode
     xpack.actions.ssl.verificationMode
+    xpack.actions.webhook.ssl.pfx.enabled
     xpack.alerting.healthCheck.interval
     xpack.alerting.invalidateApiKeysTask.interval
     xpack.alerting.invalidateApiKeysTask.removalDelay
@@ -239,10 +246,12 @@ kibana_vars=(
     xpack.alerting.rules.run.actions.max
     xpack.alerting.rules.run.alerts.max
     xpack.alerting.rules.run.actions.connectorTypeOverrides
-    xpack.alerting.maxScheduledPerMinute
+    xpack.alerting.rules.maxScheduledPerMinute
     xpack.alerts.healthCheck.interval
     xpack.alerts.invalidateApiKeysTask.interval
     xpack.alerts.invalidateApiKeysTask.removalDelay
+    xpack.alerting.disabledRuleTypes
+    xpack.alerting.enabledRuleTypes
     xpack.apm.indices.error
     xpack.apm.indices.metric
     xpack.apm.indices.onboarding
@@ -383,6 +392,7 @@ kibana_vars=(
     xpack.security.audit.appender.strategy.type
     xpack.security.audit.appender.type
     xpack.security.audit.enabled
+    xpack.security.audit.include_saved_object_names
     xpack.security.audit.ignore_filters
     xpack.security.authc.http.autoSchemesEnabled
     xpack.security.authc.http.enabled
