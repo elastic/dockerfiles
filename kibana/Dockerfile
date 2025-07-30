@@ -15,6 +15,11 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 
 RUN cd /tmp && \
   arch="$(dpkg --print-architecture)" && \
+  case "$arch" in \
+    amd64) arch='x86_64' ;; \
+    arm64) arch='aarch64' ;; \
+    *) echo >&2 "Unsupported architecture $arch" ; exit 1 ;; \
+  esac && \
   curl -f --retry 8 -s -L \
     --output kibana.tar.gz \
      https://artifacts.elastic.co/downloads/kibana/kibana-8.19.0-linux-${arch}.tar.gz && \
