@@ -86,6 +86,7 @@ WORKDIR /usr/share/kibana
 RUN ln -s /usr/share/kibana /opt/kibana
 
 ENV ELASTIC_CONTAINER true
+ENV I18N_LOCALE "en"
 ENV PATH=/usr/share/kibana/bin:$PATH
 
 # Set some Kibana configuration defaults.

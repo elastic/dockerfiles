@@ -456,6 +456,10 @@ done
 # Files created at run-time should be group-writable, for Openshift's sake.
 umask 0002
 
+if [[ -n "$I18N_LOCALE" ]]; then
+  echo "i18n.locale: $I18N_LOCALE" >> /usr/share/kibana/config/kibana.yml
+fi
+
 # The virtual file /proc/self/cgroup should list the current cgroup
 # membership. For each hierarchy, you can follow the cgroup path from
 # this file to the cgroup filesystem (usually /sys/fs/cgroup/) and
