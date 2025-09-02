@@ -2,7 +2,7 @@
   
           
 # Build env2yaml
-FROM golang:1.23 AS builder-env2yaml
+FROM golang:1.25 AS builder-env2yaml
 
 COPY env2yaml/env2yaml.go env2yaml/go.mod env2yaml/go.sum /tmp/go/src/env2yaml/
 
