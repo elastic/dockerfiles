@@ -16,7 +16,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl
 RUN cd /tmp && \
   curl --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.18.6-linux-$(arch).tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-8.18.7-linux-$(arch).tar.gz && \
   cd -
 
 RUN mkdir /usr/share/kibana
@@ -108,25 +108,25 @@ RUN userdel -r ubuntu && groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2025-08-25T20:23:12.522Z" \
+LABEL org.label-schema.build-date="2025-09-10T20:18:41.039Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="062e5bafa439548979be1f8302e2b04e103670e2" \
+  org.label-schema.vcs-ref="7ccf3080fcbd0ec666f88b3b7515537bd70da14c" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.18.6" \
-  org.opencontainers.image.created="2025-08-25T20:23:12.522Z" \
+  org.label-schema.version="8.18.7" \
+  org.opencontainers.image.created="2025-09-10T20:18:41.039Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="062e5bafa439548979be1f8302e2b04e103670e2" \
+  org.opencontainers.image.revision="7ccf3080fcbd0ec666f88b3b7515537bd70da14c" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.18.6"
+  org.opencontainers.image.version="8.18.7"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
