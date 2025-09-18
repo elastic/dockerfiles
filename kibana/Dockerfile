@@ -22,7 +22,7 @@ RUN cd /tmp && \
   esac && \
   curl -f --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.19.3-linux-${arch}.tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-8.19.4-linux-${arch}.tar.gz && \
   cd -
 
 RUN mkdir /usr/share/kibana
@@ -110,25 +110,25 @@ RUN userdel -r ubuntu && groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2025-08-26T02:13:22.134Z" \
+LABEL org.label-schema.build-date="2025-09-16T11:08:45.034Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="db23d2c570cbead7fcc72e6a60e33ef6af8e9ff3" \
+  org.label-schema.vcs-ref="57608cbf53423b24acae7c1e589faf57a6bacaf2" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.19.3" \
-  org.opencontainers.image.created="2025-08-26T02:13:22.134Z" \
+  org.label-schema.version="8.19.4" \
+  org.opencontainers.image.created="2025-09-16T11:08:45.034Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="db23d2c570cbead7fcc72e6a60e33ef6af8e9ff3" \
+  org.opencontainers.image.revision="57608cbf53423b24acae7c1e589faf57a6bacaf2" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.19.3"
+  org.opencontainers.image.version="8.19.4"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
