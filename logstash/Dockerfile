@@ -1,17 +1,6 @@
 # This Dockerfile was generated from templates/Dockerfile.erb
   
-          
-# Build env2yaml
-FROM golang:1.25 AS builder-env2yaml
-
-COPY env2yaml/env2yaml.go env2yaml/go.mod env2yaml/go.sum /tmp/go/src/env2yaml/
-
-WORKDIR /tmp/go/src/env2yaml
-
-RUN go build -trimpath
-
-# Build main image
-# Minimal distributions do not ship with en language packs.
+        
 FROM redhat/ubi9-minimal:latest
 
 ENV ELASTIC_CONTAINER=true
@@ -35,10 +24,10 @@ RUN groupadd --gid 1000 logstash && \
   --no-create-home \
   logstash && \
   arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && \
-  curl --fail --location --output logstash.tar.gz https://artifacts.elastic.co/downloads/logstash/logstash-9.2.2-linux-${arch}.tar.gz && \
+  curl --fail --location --output logstash.tar.gz https://artifacts.elastic.co/downloads/logstash/logstash-9.2.3-linux-${arch}.tar.gz && \
   tar -zxf logstash.tar.gz -C /usr/share && \
   rm logstash.tar.gz && \
-  mv /usr/share/logstash-9.2.2 /usr/share/logstash && \
+  mv /usr/share/logstash-9.2.3 /usr/share/logstash && \
   chown -R logstash:root /usr/share/logstash && \
   chmod -R g=u /usr/share/logstash && \
   mkdir /licenses && \
@@ -47,7 +36,10 @@ RUN groupadd --gid 1000 logstash && \
   find /usr/share/logstash -type d -exec chmod g+s {} \; && \
   ln -s /usr/share/logstash /opt/logstash
 
-COPY --from=builder-env2yaml /tmp/go/src/env2yaml/env2yaml /usr/local/bin/env2yaml
+
+COPY --chown=logstash:root env2yaml/classes /usr/share/logstash/env2yaml/classes/
+COPY --chown=logstash:root env2yaml/lib /usr/share/logstash/env2yaml/lib/
+COPY --chmod=0755 env2yaml/env2yaml /usr/local/bin/env2yaml
 COPY --chown=logstash:root config/pipelines.yml config/log4j2.properties config/log4j2.file.properties /usr/share/logstash/config/
 COPY --chown=logstash:root config/logstash-full.yml /usr/share/logstash/config/logstash.yml
 COPY --chown=logstash:root pipeline/default.conf /usr/share/logstash/pipeline/logstash.conf
@@ -60,20 +52,20 @@ USER 1000
 
 EXPOSE 9600 5044
 
-LABEL org.label-schema.build-date=2025-11-25T19:42:51+00:00 \
+LABEL org.label-schema.build-date=2025-12-10T14:15:16+00:00 \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="logstash" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="9.2.2" \
-  org.opencontainers.image.created=2025-11-25T19:42:51+00:00 \
+  org.label-schema.version="9.2.3" \
+  org.opencontainers.image.created=2025-12-10T14:15:16+00:00 \
   org.opencontainers.image.description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
   org.opencontainers.image.licenses="Elastic License" \
   org.opencontainers.image.title="logstash" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="9.2.2" \
+  org.opencontainers.image.version="9.2.3" \
   description="Logstash is a free and open server-side data processing pipeline that ingests data from a multitude of sources, transforms it, and then sends it to your favorite 'stash.'" \
   license="Elastic License" \
   maintainer="info@elastic.co" \
