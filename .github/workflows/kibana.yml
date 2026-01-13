@@ -4,11 +4,11 @@ on:
   push:
     branches-ignore: ['main']
   pull_request:
-    branches-ignore: ['main']
 
 jobs:
 
   build:
+    if: github.event_name == 'push' || github.event.pull_request.base.ref != 'main'
 
     runs-on: ubuntu-latest
 
