@@ -2,13 +2,13 @@ name: Elasticsearch Docker Image CI
 
 on:
   push:
-    branches: [ "7.17", "8.17", "8.18", "8.19", "9.0", "9.1"]
+    branches-ignore: ['main']
   pull_request:
 
 jobs:
 
   build:
-    if: github.event.pull_request.base.ref != 'main'
+    if: github.event_name == 'push' || github.event.pull_request.base.ref != 'main'
 
     runs-on: ubuntu-latest
 
