@@ -8,6 +8,18 @@ products' own repositories for which you can get the links in the sections below
 Please note that **issues are disabled on this repo** and that all issues and PRs 
 must be filed in the products' repositories.
 
+### Branch Model
+
+This repository follows a **release branch model**. All Dockerfiles and related code 
+are stored on branches named after the minor version (e.g., `9.2` for version 9.2.x 
+releases like 9.2.3). The `main` branch only contains this README and GitHub 
+workflows - it does not contain any Dockerfiles.
+
+To find the Dockerfiles for a specific version:
+- Checkout the branch corresponding to the minor version (e.g., `git checkout 9.2` for 9.2.x versions)
+- The repository only contains branches for versions that have already been released
+- Development versions are not present in this repository
+
 ## Elasticsearch
 
 **Elasticsearch** is a distributed, RESTful search and analytics engine capable of
