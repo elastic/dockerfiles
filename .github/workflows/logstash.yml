@@ -15,5 +15,16 @@ jobs:
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
     
+    - name: Check if logstash directory exists
+      id: check_dir
+      run: |
+        if [ ! -d "logstash" ]; then
+          echo "exists=false" >> $GITHUB_OUTPUT
+          echo "Directory logstash does not exist, skipping build"
+        else
+          echo "exists=true" >> $GITHUB_OUTPUT
+        fi
+    
     - name: Build the Logstash Docker image
+      if: steps.check_dir.outputs.exists == 'true'
       run: docker build logstash
