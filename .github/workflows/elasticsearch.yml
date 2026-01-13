@@ -4,11 +4,11 @@ on:
   push:
     branches: [ "7.17", "8.17", "8.18", "8.19", "9.0", "9.1"]
   pull_request:
-    branches: [ "7.17", "8.17", "8.18", "8.19", "9.0", "9.1"]
 
 jobs:
 
   build:
+    if: github.event.pull_request.base.ref != 'main'
 
     runs-on: ubuntu-latest
 
