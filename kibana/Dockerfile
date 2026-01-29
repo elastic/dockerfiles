@@ -68,6 +68,7 @@ EXPOSE 5601
 
 RUN microdnf install --setopt=tsflags=nodocs -y \
       fontconfig liberation-fonts-common freetype shadow-utils nss findutils && \
+      microdnf update -y gnupg2 && \
       microdnf clean all
 
 # Bring in Kibana from the initial stage.
