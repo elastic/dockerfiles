@@ -14,6 +14,7 @@ RUN \
   microdnf install -y procps findutils tar gzip && \
   microdnf install -y openssl && \
   microdnf install -y which shadow-utils && \
+  microdnf update -y gnupg2 && \
   microdnf clean all
 
 # Provide a non-root user to run the process

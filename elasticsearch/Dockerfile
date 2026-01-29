@@ -68,6 +68,7 @@ FROM redhat/ubi9-minimal:latest
 
 RUN microdnf install --setopt=tsflags=nodocs -y \
     nc shadow-utils zip unzip findutils procps-ng && \
+    microdnf update -y gnupg2 && \
     microdnf clean all
 
 RUN groupadd -g 1000 elasticsearch && \
