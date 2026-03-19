@@ -30,7 +30,7 @@ RUN set -eux; \
 RUN mkdir /usr/share/elasticsearch
 WORKDIR /usr/share/elasticsearch
 
-RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.19.12-linux-$(arch).tar.gz
+RUN curl --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-8.19.13-linux-$(arch).tar.gz
 
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1
 
@@ -67,9 +67,8 @@ RUN sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elas
 
 FROM ubuntu:24.04
 
-# Change default shell to bash, then install required packages with retries.
-RUN yes no | dpkg-reconfigure dash && \
-for iter in 1 2 3 4 5 6 7 8 9 10; do \
+# Symlink sh to bash to override dash which doens't respect dotted env vars
+RUN ln -sf bash /bin/sh && for iter in 1 2 3 4 5 6 7 8 9 10; do \
       export DEBIAN_FRONTEND=noninteractive && \
       apt-get update && \
       apt-get upgrade -y && \
@@ -84,7 +83,7 @@ for iter in 1 2 3 4 5 6 7 8 9 10; do \
 
 RUN userdel -r ubuntu && \
     groupadd -g 1000 elasticsearch && \
-    useradd --uid 1000 --gid 1000 --home-dir /usr/share/elasticsearch --create-home elasticsearch && \
+    useradd --uid 1000 --gid 1000 --home-dir /usr/share/elasticsearch --create-home --shell /bin/bash elasticsearch && \
     usermod -aG root elasticsearch && \
     chown -R 0:0 /usr/share/elasticsearch
 
@@ -123,25 +122,25 @@ RUN /etc/ca-certificates/update.d/docker-openjdk
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2026-02-23T23:08:40.713020893Z" \
+LABEL org.label-schema.build-date="2026-03-16T10:08:32.007626438Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="840cd2a58b052d1632219ee0b8dcc0f364226287" \
+  org.label-schema.vcs-ref="f6279a2167a248af2bb287409231fb0cf52aa0db" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.19.12" \
-  org.opencontainers.image.created="2026-02-23T23:08:40.713020893Z" \
+  org.label-schema.version="8.19.13" \
+  org.opencontainers.image.created="2026-03-16T10:08:32.007626438Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="840cd2a58b052d1632219ee0b8dcc0f364226287" \
+  org.opencontainers.image.revision="f6279a2167a248af2bb287409231fb0cf52aa0db" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.19.12"
+  org.opencontainers.image.version="8.19.13"
 
 # Our actual entrypoint is `tini`, a minimal but functional init program. It
 # calls the entrypoint we provide, while correctly forwarding signals.
