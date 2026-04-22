@@ -9,7 +9,7 @@
 # Build stage 0 `builder`:
 # Extract Kibana artifact
 ################################################################################
-FROM redhat/ubi9-minimal:latest AS builder
+FROM redhat/ubi9-minimal:9.7-1776645941 AS builder
 
 RUN microdnf install -y findutils tar gzip
 
@@ -63,7 +63,7 @@ RUN mkdir -p /usr/share/fonts/local && \
 # Copy kibana from stage 0
 # Add entrypoint
 ################################################################################
-FROM redhat/ubi9-minimal:latest
+FROM redhat/ubi9-minimal:9.7-1776645941
 EXPOSE 5601
 
 RUN microdnf install --setopt=tsflags=nodocs -y \
