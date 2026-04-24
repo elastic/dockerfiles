@@ -1,7 +1,7 @@
 # This Dockerfile was generated from templates/Dockerfile.erb
   
         
-FROM redhat/ubi9-minimal:latest
+FROM redhat/ubi9-minimal:9.7-1776645941
 
 ENV ELASTIC_CONTAINER=true
 ENV PATH=/usr/share/logstash/bin:$PATH
