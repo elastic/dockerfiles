@@ -1,0 +1,26 @@
+name: Stale PR cleanup
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # daily at midnight UTC
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Check for stale PRs
+        uses: actions/stale@v10
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days-before-issue-stale: -1  # Disables stale check for issues
+          days-before-issue-close: -1  # Disables closing for issues
+          days-before-pr-stale: 7
+          days-before-pr-close: 7
+          stale-pr-label: 'stale'
+          stale-pr-message: >
+            This PR looks inactive. It will be closed in 7 days if
+            there are no further updates.
