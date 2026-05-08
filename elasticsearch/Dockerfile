@@ -5,7 +5,7 @@
 # Extract Elasticsearch artifact
 ################################################################################
 
-FROM redhat/ubi9-minimal:latest AS builder
+FROM redhat/ubi9-minimal:9.7-1778072020 AS builder
 
 RUN microdnf install -y findutils tar gzip
 
@@ -63,7 +63,7 @@ COPY --chmod=664 config/elasticsearch.yml config/log4j2.properties config/
 # Add entrypoint
 ################################################################################
 
-FROM redhat/ubi9-minimal:latest
+FROM redhat/ubi9-minimal:9.7-1778072020
 
 RUN microdnf install --setopt=tsflags=nodocs -y \
     nc shadow-utils zip unzip findutils procps-ng && \
