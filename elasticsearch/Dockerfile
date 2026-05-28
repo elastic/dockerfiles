@@ -28,7 +28,7 @@ RUN set -eux; \
     chmod 0555 /bin/tini
 
 WORKDIR /usr/share/elasticsearch
-RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.3.4-linux-$arch.tar.gz
+RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.3.5-linux-$arch.tar.gz
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1 && \
 # Configure the distribution for Docker
     sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elasticsearch-env && \
@@ -99,30 +99,30 @@ RUN chmod g=u /etc/passwd && \
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2026-04-22T22:10:58.242616321Z" \
+LABEL org.label-schema.build-date="2026-05-25T22:07:43.142271687Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="69a3e6c50ebb57a1fdbf3f235be9f11061ac7d86" \
+  org.label-schema.vcs-ref="7dcc32bebba091844c0207f9dae8fda6c7d08542" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="9.3.4" \
-  org.opencontainers.image.created="2026-04-22T22:10:58.242616321Z" \
+  org.label-schema.version="9.3.5" \
+  org.opencontainers.image.created="2026-05-25T22:07:43.142271687Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="69a3e6c50ebb57a1fdbf3f235be9f11061ac7d86" \
+  org.opencontainers.image.revision="7dcc32bebba091844c0207f9dae8fda6c7d08542" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="9.3.4"
+  org.opencontainers.image.version="9.3.5"
 
 LABEL name="Elasticsearch" \
   maintainer="infra@elastic.co" \
   vendor="Elastic" \
-  version="9.3.4" \
+  version="9.3.5" \
   release="1" \
   summary="Elasticsearch" \
   description="You know, for search."
