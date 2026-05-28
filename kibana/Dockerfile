@@ -17,7 +17,7 @@ RUN cd /tmp && \
   arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && \
   curl -f --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-9.3.4-linux-${arch}.tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-9.3.5-linux-${arch}.tar.gz && \
   cd -
 
 RUN mkdir /usr/share/kibana
@@ -103,30 +103,30 @@ RUN groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2026-04-22T11:33:27.171Z" \
+LABEL org.label-schema.build-date="2026-05-25T11:35:15.942Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="49d42f259436b65ab5297f19a65855bed082f302" \
+  org.label-schema.vcs-ref="db396449a69d0613b0b4dc8b8e9789aa35504e0f" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="9.3.4" \
-  org.opencontainers.image.created="2026-04-22T11:33:27.171Z" \
+  org.label-schema.version="9.3.5" \
+  org.opencontainers.image.created="2026-05-25T11:35:15.942Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="49d42f259436b65ab5297f19a65855bed082f302" \
+  org.opencontainers.image.revision="db396449a69d0613b0b4dc8b8e9789aa35504e0f" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="9.3.4"
+  org.opencontainers.image.version="9.3.5"
 
 LABEL name="Kibana" \
   maintainer="infra@elastic.co" \
   vendor="Elastic" \
-  version="9.3.4" \
+  version="9.3.5" \
   release="1" \
   summary="Kibana" \
   description="Your window into the Elastic Stack."
