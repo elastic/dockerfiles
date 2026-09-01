@@ -22,7 +22,7 @@ RUN cd /tmp && \
   esac && \
   curl -f --retry 8 -s -L \
     --output kibana.tar.gz \
-     https://artifacts.elastic.co/downloads/kibana/kibana-8.19.20-linux-${arch}.tar.gz && \
+     https://artifacts.elastic.co/downloads/kibana/kibana-8.19.21-linux-${arch}.tar.gz && \
   cd -
 
 RUN mkdir /usr/share/kibana
@@ -110,25 +110,25 @@ RUN userdel -r ubuntu && groupadd --gid 1000 kibana && \
       --home-dir /usr/share/kibana --no-create-home \
       kibana
 
-LABEL org.label-schema.build-date="2026-08-05T22:09:51.434Z" \
+LABEL org.label-schema.build-date="2026-08-26T18:14:44.924Z" \
   org.label-schema.license="Elastic License" \
   org.label-schema.name="Kibana" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.usage="https://www.elastic.co/guide/en/kibana/reference/index.html" \
-  org.label-schema.vcs-ref="4036be744384423f261fcf74b1b99fd4d044dc97" \
+  org.label-schema.vcs-ref="f8b192d79d9df731fc3811263f4461d842834c6a" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="8.19.20" \
-  org.opencontainers.image.created="2026-08-05T22:09:51.434Z" \
+  org.label-schema.version="8.19.21" \
+  org.opencontainers.image.created="2026-08-26T18:14:44.924Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/kibana/reference/index.html" \
   org.opencontainers.image.licenses="Elastic License" \
-  org.opencontainers.image.revision="4036be744384423f261fcf74b1b99fd4d044dc97" \
+  org.opencontainers.image.revision="f8b192d79d9df731fc3811263f4461d842834c6a" \
   org.opencontainers.image.source="https://github.com/elastic/kibana" \
   org.opencontainers.image.title="Kibana" \
   org.opencontainers.image.url="https://www.elastic.co/products/kibana" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="8.19.20"
+  org.opencontainers.image.version="8.19.21"
 
 
 ENTRYPOINT ["/bin/tini", "--"]
