@@ -28,7 +28,7 @@ RUN set -eux; \
     chmod 0555 /bin/tini
 
 WORKDIR /usr/share/elasticsearch
-RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.5.5-linux-$arch.tar.gz
+RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.5.6-linux-$arch.tar.gz
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1 && \
 # Configure the distribution for Docker
     sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elasticsearch-env && \
@@ -65,7 +65,10 @@ COPY --chmod=664 config/elasticsearch.yml config/log4j2.properties config/
 
 FROM redhat/ubi9-minimal:latest
 
-RUN microdnf install --setopt=tsflags=nodocs -y \
+# Upgrade the base image's packages first, so that the image gets fixes such as an updated set of trusted CA
+# certificates as soon as Red Hat publishes them, rather than only when the base image is next rebuilt.
+RUN microdnf upgrade --setopt=tsflags=nodocs -y && \
+    microdnf install --setopt=tsflags=nodocs -y \
     nc shadow-utils tar zip unzip findutils procps-ng && \
     microdnf clean all
 
@@ -98,30 +101,30 @@ RUN chmod g=u /etc/passwd && \
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2026-09-30T22:12:03.984586187Z" \
+LABEL org.label-schema.build-date="2026-10-28T22:37:54.387301573Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="48acba663b09e70b115dd879329141506c377890" \
+  org.label-schema.vcs-ref="fd1e8011342a0988e432b999cea4bf884ca120ed" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="9.5.5" \
-  org.opencontainers.image.created="2026-09-30T22:12:03.984586187Z" \
+  org.label-schema.version="9.5.6" \
+  org.opencontainers.image.created="2026-10-28T22:37:54.387301573Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="48acba663b09e70b115dd879329141506c377890" \
+  org.opencontainers.image.revision="fd1e8011342a0988e432b999cea4bf884ca120ed" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="9.5.5"
+  org.opencontainers.image.version="9.5.6"
 
 LABEL name="Elasticsearch" \
   maintainer="infra@elastic.co" \
   vendor="Elastic" \
-  version="9.5.5" \
+  version="9.5.6" \
   release="1" \
   summary="Elasticsearch" \
   description="You know, for search."
