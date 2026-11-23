@@ -28,7 +28,7 @@ RUN set -eux; \
     chmod 0555 /bin/tini
 
 WORKDIR /usr/share/elasticsearch
-RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.4.9-linux-$arch.tar.gz
+RUN arch="$(rpm --query --queryformat='%{ARCH}' rpm)" && curl -f --retry 10 -S -L --output /tmp/elasticsearch.tar.gz https://artifacts-no-kpi.elastic.co/downloads/elasticsearch/elasticsearch-9.4.10-linux-$arch.tar.gz
 RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1 && \
 # Configure the distribution for Docker
     sed -i -e 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' bin/elasticsearch-env && \
@@ -51,7 +51,18 @@ RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1 && \
 # You can't install plugins that include configuration when running as `elasticsearch` and the `config`
 # dir is owned by `root`, because the installed tries to manipulate the permissions on the plugin's
 # config directory.
-    chown 1000:1000 bin config config/jvm.options.d data logs plugins
+    chown 1000:1000 bin config config/jvm.options.d data logs plugins && \
+# Move the paths that are copied in layers of their own out of the way, keeping their paths, into a directory per layer
+    mkdir /layers && \
+    n=0 && \
+    for pattern in 'jdk' 'modules/x-pack-ml/platform/*/lib'; do \
+        mkdir "/layers/$n" || exit 1; \
+        for path in $pattern; do \
+            [ -d "$path" ] || continue; \
+            mkdir -p "/layers/$n/$(dirname "$path")" && mv "$path" "/layers/$n/$path" || exit 1; \
+        done; \
+        n=$((n + 1)); \
+    done
 
 # The distribution includes a `config` directory, no need to create it
 COPY --chmod=664 config/elasticsearch.yml config/log4j2.properties config/
@@ -82,6 +93,12 @@ COPY --from=builder /bin/tini /bin/tini
 
 WORKDIR /usr/share/elasticsearch
 
+# Layer of its own: jdk
+COPY --from=builder --chown=0:0 /layers/0 .
+
+# Layer of its own: modules/x-pack-ml/platform/*/lib
+COPY --from=builder --chown=0:0 /layers/1 .
+
 COPY --from=builder --chown=0:0 /usr/share/elasticsearch .
 
 # Replace OpenJDK's built-in CA certificate keystore with the one from the OS
@@ -101,30 +118,30 @@ RUN chmod g=u /etc/passwd && \
 
 EXPOSE 9200 9300
 
-LABEL org.label-schema.build-date="2026-10-28T23:37:20.923184036Z" \
+LABEL org.label-schema.build-date="2026-11-19T15:36:13.710096684Z" \
   org.label-schema.license="Elastic-License-2.0" \
   org.label-schema.name="Elasticsearch" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.usage="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
-  org.label-schema.vcs-ref="1370365b7b234866238d2121782bca7613e2d7c1" \
+  org.label-schema.vcs-ref="598c938bcfcbc648b9446ade1367c6aadb7fd369" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   org.label-schema.vendor="Elastic" \
-  org.label-schema.version="9.4.9" \
-  org.opencontainers.image.created="2026-10-28T23:37:20.923184036Z" \
+  org.label-schema.version="9.4.10" \
+  org.opencontainers.image.created="2026-11-19T15:36:13.710096684Z" \
   org.opencontainers.image.documentation="https://www.elastic.co/guide/en/elasticsearch/reference/index.html" \
   org.opencontainers.image.licenses="Elastic-License-2.0" \
-  org.opencontainers.image.revision="1370365b7b234866238d2121782bca7613e2d7c1" \
+  org.opencontainers.image.revision="598c938bcfcbc648b9446ade1367c6aadb7fd369" \
   org.opencontainers.image.source="https://github.com/elastic/elasticsearch" \
   org.opencontainers.image.title="Elasticsearch" \
   org.opencontainers.image.url="https://www.elastic.co/products/elasticsearch" \
   org.opencontainers.image.vendor="Elastic" \
-  org.opencontainers.image.version="9.4.9"
+  org.opencontainers.image.version="9.4.10"
 
 LABEL name="Elasticsearch" \
   maintainer="infra@elastic.co" \
   vendor="Elastic" \
-  version="9.4.9" \
+  version="9.4.10" \
   release="1" \
   summary="Elasticsearch" \
   description="You know, for search."
