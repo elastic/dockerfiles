@@ -51,18 +51,7 @@ RUN tar -zxf /tmp/elasticsearch.tar.gz --strip-components=1 && \
 # You can't install plugins that include configuration when running as `elasticsearch` and the `config`
 # dir is owned by `root`, because the installed tries to manipulate the permissions on the plugin's
 # config directory.
-    chown 1000:1000 bin config config/jvm.options.d data logs plugins && \
-# Move the paths that are copied in layers of their own out of the way, keeping their paths, into a directory per layer
-    mkdir /layers && \
-    n=0 && \
-    for pattern in 'jdk' 'modules/x-pack-ml/platform/*/lib'; do \
-        mkdir "/layers/$n" || exit 1; \
-        for path in $pattern; do \
-            [ -d "$path" ] || continue; \
-            mkdir -p "/layers/$n/$(dirname "$path")" && mv "$path" "/layers/$n/$path" || exit 1; \
-        done; \
-        n=$((n + 1)); \
-    done
+    chown 1000:1000 bin config config/jvm.options.d data logs plugins
 
 # The distribution includes a `config` directory, no need to create it
 COPY --chmod=664 config/elasticsearch.yml config/log4j2.properties config/
@@ -76,10 +65,10 @@ COPY --chmod=664 config/elasticsearch.yml config/log4j2.properties config/
 
 FROM redhat/ubi9-minimal:latest
 
-# Upgrade the base image's packages first, so that the image gets fixes such as an updated set of trusted CA
-# certificates as soon as Red Hat publishes them, rather than only when the base image is next rebuilt.
-RUN microdnf upgrade --setopt=tsflags=nodocs -y && \
-    microdnf install --setopt=tsflags=nodocs -y \
+# Packages are not upgraded on top of the base image: fixes such as an updated set of trusted CA certificates come
+# from Red Hat rebuilding the base image. An upgrade step would make the image build differently from one day to
+# the next, which the Docker Official Images do not accept.
+RUN microdnf install --setopt=tsflags=nodocs -y \
     nc shadow-utils tar zip unzip findutils procps-ng && \
     microdnf clean all
 
@@ -92,12 +81,6 @@ ENV ELASTIC_CONTAINER=true
 COPY --from=builder /bin/tini /bin/tini
 
 WORKDIR /usr/share/elasticsearch
-
-# Layer of its own: jdk
-COPY --from=builder --chown=0:0 /layers/0 .
-
-# Layer of its own: modules/x-pack-ml/platform/*/lib
-COPY --from=builder --chown=0:0 /layers/1 .
 
 COPY --from=builder --chown=0:0 /usr/share/elasticsearch .
 
